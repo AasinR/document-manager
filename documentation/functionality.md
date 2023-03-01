@@ -6,11 +6,11 @@ A cél egy webes dokumentum kezelő rendszer elkészítése tudományos cikkekhe
 ## **Felhasználói fiók**
 A rendszer teljes használatához kell egy felhasználói fiók, viszont a publikált cikkeket vendégként is el lehet érni.
 
-- **Regisztráció**  
-  Szükséges adatok: **email, jelszó, név**
+- **Regisztráció és bejelentkezés**  
+  A fiókkezelés **LDAP ( *Lightweight Directory Access Protocol* )** autentikációval lenne megvalósítva.
 
 - **Adat módosítás**  
-  A regisztrációnál megadott adatokat lehet módosítani.
+  A felhasználó tudja módosítani a személyes adatait.
 
 - **Fiók törlés**  
   A felhasználói fiók törölhető.  
@@ -87,6 +87,9 @@ A fájlokat meg lehet nyitni az alkalmazáson belül.
 
 ## **Publikus dokumentumok**
 A publikus dokumentumokat minden felhasználó látja. Ezekre rá lehet keresni egy kulcsszó megadásával.
+
+- **Láthatóság**  
+  A publikus dokumentumra be lehet állítani, hogy csak a bejelentkezett felhasználók látják, vagy vendégek is.
 
 - **Keresés**  
   Ennek a funkciónak a használatához **nem szükséges bejelentkezve lenni**.  
