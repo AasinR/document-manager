@@ -1,0 +1,11 @@
+.navbar {
+    height: 40px;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    gap: 1rem;
+
+    background-color: #202020;
+    border-bottom: 1px solid #808080;
+}
