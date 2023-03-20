@@ -41,6 +41,17 @@ Minden felhasználóhoz tartozik egy privát könyvtár, amihez csak neki van ho
     
   Az adatokat a rendszer megpróbálja a fájl alapján megállapítani, de manuálisan is meg lehet őket adni.
 
+- **Tag-ek megadása**  
+  Egy cikkhez hozzá lehet adni tageket, amik megsegítik a keresést.  
+  A tag-ek nincsenek előre meghatározva.
+
+- **Kapcsolódó dokumentumok**  
+  Egy cikknél be lehet linkelni hozzá kapcsolódó cikkeket.  
+  Ezek a cikk megnézésénél egy oldalsó ablakban megjelennek, ezáltal könnyen át lehet rájuk navigálni.
+
+- **BibTeX import / export**  
+  Fájl feltöltésnél BibTeX fájlokat is fel lehet tölteni, vagy már meglévő cikkektől kiexportálni őket.
+
 - **Mappa kezelés**  
   A feltöltött fájlokat mappákba lehet rendezni.  
   Egy mappán belül lehet **almappákat** is létrehozni.  
@@ -52,6 +63,9 @@ Minden felhasználóhoz tartozik egy privát könyvtár, amihez csak neki van ho
 
 - **Jegyzet írás**  
   A könyvtárban lévő fájlokhoz lehet jegyzetet csatolni.
+
+- **Riport generálás**  
+  Ki lehet jelölni cikkeket és azok adatait kilistázni egy letölthető fájlba.
 
 ## **Megosztott könyvtár**
 Létre lehet hozni csapatokat, aminek a dokumentumait a csapat összes tagja tudja kezelni.
@@ -96,7 +110,8 @@ A publikus dokumentumokat minden felhasználó látja. Ezekre rá lehet keresni 
   Egy kulcsszó megadásával lehet rákeresni dokumentumokra ( *cím, szerző, DOI* ).
 
 - **Kereső filter**  
-  A keresési eredményeket tovább lehet szűrni, kiválasztott metaadatok alapján ( *év, típus, téma, szerző, stb...* ).
+  A keresési eredményeket tovább lehet szűrni, kiválasztott metaadatok alapján ( *év, típus, téma, szerző, stb...* ).  
+  Keresni felsorolt tag-ek alapján is lehet.
 
 - **Mentés a könyvtárba**  
   A kiválasztott dokumentumot le lehet menteni. Ilyenkor egy másolat **bekerül a felhasználó könyvtárába**.  
@@ -105,3 +120,15 @@ A publikus dokumentumokat minden felhasználó látja. Ezekre rá lehet keresni 
 
 - **Megjegyzés írás**  
   A publikus dokumentumokhoz a felhasználók tudnak megjegyzéseket írni. Ezek a megjegyzések **bárki által olvashatóak**, még vendég felhasználók által is.
+
+## **Review**
+A cikkeket lehet review-olni. Ilyenkor a kiválasztott cikket / ckikkeket ki lehet osztani bizonyos felhasználóknak, akiknek lehetőségük lesz az elbírálni.
+
+- **Megosztás**  
+  Ki lehet osztani egyszerre több embernek is a cikket review-ra.
+
+- **Megjegyzés írás**  
+  Ugyan úgy mint egy rendes cikknél, itt is lehet megjegyzéseket írni hozzá.
+
+- **Értékelés**  
+  A review-ra kiosztott cikről el lehet dönteni hogy el lesz fogadva, vagy elutasítva.
