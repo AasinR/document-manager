@@ -29,6 +29,8 @@ Minden felhasználóhoz tartozik egy privát könyvtár, amihez csak neki van ho
 - **Fájl törlés**  
   Törlés után a fájl nem törlődik még ki véglegesen. Elsőre még bekerül a **kukába**, ahonnan 30 napon belül még vissza lehet állítani.  
   **30 nap** után a rendszer automatikusan törli véglegesen, viszont manuálisan is lehet.
+  
+  *Privát fájlok törlése egyértelmű. Publikus fájlok törlése kérdéses: csak admin törölheti? Ha ketten ugyanazt töltik fel privátban, az fizikailag egy rekord/fájl lesz? Ha nem, mi történik, ha mindketten publikálják? Mi van, ha tovább szeretnék használni egy valaki más által feltöltött és azután törölt publikus fájlt?*
 
 - **Metaadat**  
   Minden feltöltött fájlhoz lehet metaadatokat csatolni, amik alapján lehet rájuk keresni:
@@ -56,6 +58,7 @@ Minden felhasználóhoz tartozik egy privát könyvtár, amihez csak neki van ho
   A feltöltött fájlokat mappákba lehet rendezni.  
   Egy mappán belül lehet **almappákat** is létrehozni.  
   Egy mappa törlésével, a **benne lévő fájlok megmaradnak**, de az almappák törölve lesznek.
+  *A mappákba rendezés virtuális, cimkékkel/alcimkékkel történik, nincs egy kitüntetett mappaszerkezet.*
 
 - **Kedvenc dokumentum megjelölése**  
   Meg lehet jelölni csillaggal a feltöltött fájlokat.  
@@ -69,6 +72,7 @@ Minden felhasználóhoz tartozik egy privát könyvtár, amihez csak neki van ho
 
 ## **Megosztott könyvtár**
 Létre lehet hozni csapatokat, aminek a dokumentumait a csapat összes tagja tudja kezelni.
+*Három szintű jogosultságkezelés: privát/csapat/publikus?*
 
 - **Rangok**  
   A csapaton belül rangokat lehet kiosztani, ami meghatározza, kinek mihez van joga.
@@ -83,6 +87,8 @@ Létre lehet hozni csapatokat, aminek a dokumentumait a csapat összes tagja tud
 
 - **Fájl törlés**  
   Mint a privát könyvtárnál, itt is van egy kuka, ami 30 napig megőrzi a törölt fájlokat.
+  
+  *Itt is kérdés, hogy hogyan akarjuk a privát/csapat/publikus fájlokat kezelni.*
 
 - **Mappa kezelés**  
   Ugyan úgy működik, mint a privát könyvtárban.
@@ -99,11 +105,15 @@ A fájlokat meg lehet nyitni az alkalmazáson belül.
   A fájlon belül megjegyzéseket lehet írni, amik a megadott helyen jelennek meg.  
   Be lehet állítani hogy a megjegyzést ki láthassa ( *privát* / *csapat* ).
 
+  *A kiemelés és megjegyzés között mi a különbség? Nem lehetne összevonni a kettőt privát/csapat/publikus alapon?*
+
 ## **Publikus dokumentumok**
 A publikus dokumentumokat minden felhasználó látja. Ezekre rá lehet keresni egy kulcsszó megadásával.
 
 - **Láthatóság**  
   A publikus dokumentumra be lehet állítani, hogy csak a bejelentkezett felhasználók látják, vagy vendégek is.
+  
+  *A rendszer célja miatt a "vendég" lehet, hogy mégsem kell majd.*
 
 - **Keresés**  
   Ennek a funkciónak a használatához **nem szükséges bejelentkezve lenni**.  
@@ -117,6 +127,8 @@ A publikus dokumentumokat minden felhasználó látja. Ezekre rá lehet keresni 
   A kiválasztott dokumentumot le lehet menteni. Ilyenkor egy másolat **bekerül a felhasználó könyvtárába**.  
   Ha frissítés történne a publikus dokumentumon, arról a felhasználó, akinek le van mentve, értesítést kap, hogy van egy újabb verzió.  
   A publikus dokumentum törlése esetén is értesítést kap a felhasználó, viszont a lementett dokumentum megmarad a könyvtárában.
+  
+  *Dokumentum verziókkal nem biztos, hogy foglalkoznunk kell.*
 
 - **Megjegyzés írás**  
   A publikus dokumentumokhoz a felhasználók tudnak megjegyzéseket írni. Ezek a megjegyzések **bárki által olvashatóak**, még vendég felhasználók által is.
@@ -124,11 +136,13 @@ A publikus dokumentumokat minden felhasználó látja. Ezekre rá lehet keresni 
 ## **Review**
 A cikkeket lehet review-olni. Ilyenkor a kiválasztott cikket / ckikkeket ki lehet osztani bizonyos felhasználóknak, akiknek lehetőségük lesz az elbírálni.
 
-- **Megosztás**  
+*"May" (Shall/Should/May)*
+
+- **Megosztás**
   Ki lehet osztani egyszerre több embernek is a cikket review-ra.
 
-- **Megjegyzés írás**  
+- **Megjegyzés írás**
   Ugyan úgy mint egy rendes cikknél, itt is lehet megjegyzéseket írni hozzá.
 
-- **Értékelés**  
+- **Értékelés**
   A review-ra kiosztott cikről el lehet dönteni hogy el lesz fogadva, vagy elutasítva.
