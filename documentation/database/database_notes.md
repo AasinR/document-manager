@@ -1,11 +1,18 @@
 # **Database Plans**
-MongoDB databse
+MongoDB database
 
 ## **Users collection**
 - **User Name** ( String )
 - Shown Name ( String )
 - Email ( String )
 - Permission ( String )
+
+## **Group collection**
+- **ID** ( String )
+- Name ( String )
+- User List ( List )
+    - User Name ( String )
+    - Permission ( String )
 
 ## **Documents collection**
 - **ID** ( String )
@@ -30,25 +37,10 @@ MongoDB databse
     - Date ( Date )
 
 ## **Libraries collection**
-Private and Shared libraries are separated
-
-### **Private Library**
 - **ID** ( String )
 - Owner ( String )
-- Documents ( List )
-    - Document ID ( String )
-    - Private Tag List ( String List )
-    - Comment List ( List )
-        - ID ( String )
-        - User Name ( String )
-        - Content ( String )
-        - Date ( Date )
-
-### **Shared Library**
-- **ID** ( String )
-- User List ( List )
     - User Name ( String )
-    - Permission ( String )
+    - Group ID ( String )
 - Documents ( List )
     - Document ID ( String )
     - Private Tag List ( String List )
@@ -65,7 +57,7 @@ Private and Shared libraries are separated
 - Date ( Date )
 
 ## **File storage**
-Files will be stored in the databse, using GridFS
+Files will be stored in the database, using GridFS
 
 ## **Document Highlights**
 PDF Highlight data storage requires further investigation
