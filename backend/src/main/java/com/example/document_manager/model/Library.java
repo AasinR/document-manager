@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Document("libraries")
-public class PrivateLibrary {
+public class Library {
     private String id;
     private String owner;
     private List<LibraryDocumentData> documentDataList;

@@ -1,6 +1,6 @@
 package com.example.document_manager.enums;
 
-public enum LibraryPermission {
+public enum GroupPermission {
     OWNER,
     ADMIN,
     MEMBER
