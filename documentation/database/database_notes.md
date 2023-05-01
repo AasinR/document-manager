@@ -2,27 +2,28 @@
 MongoDB database
 
 ## **Users collection**
-- **User Name** ( String )
+- **Username** ( String )
 - Shown Name ( String )
 - Email ( String )
 - Permission ( String )
 
-## **Group collection**
+## **Groups collection**
 - **ID** ( String )
 - Name ( String )
 - User List ( List )
-    - User Name ( String )
+    - Username ( String )
     - Permission ( String )
 
 ## **Documents collection**
+If the visibility is set to public, the  location is null
+
 - **ID** ( String )
 - File ID ( String )
 - Visibility ( String )
-- Metadata Version ( int )
-- Metadata List ( List )
-    - User Name ( String )
-    - Metadata Version ( int )
-    - Modification Date ( Date )
+- Location ( String )
+    - Username ( String )
+    - Group ID ( String )
+- Metadata Version ( String )
     - Title ( String )
     - Author List ( String List )
     - Description ( String )
@@ -30,26 +31,42 @@ MongoDB database
     - Identifier List ( String List )
     - Related Documents ( String List )
     - Tag List ( String List )
-- Comment List ( List )
-    - ID ( String )
-    - User Name ( String )
-    - Content ( String )
-    - Date ( Date )
+    - Other Data ( key-value )
 
-## **Libraries collection**
+## **Metadata-Versions collection**
+- **ID** ( String )
+- Document ID ( String )
+- Username ( String )
+- Modification Date ( Date )
+- Tag List ( String List )
+- Title ( String )
+- Author List ( String List )
+- Description ( String )
+- Publication Date ( Date )
+- Identifier List ( String List )
+- Related Documents ( String List )
+- Other Data ( key-value )
+
+## **Library-saves collection**
 - **ID** ( String )
 - Owner ( String )
-    - User Name ( String )
+    - Username ( String )
     - Group ID ( String )
-- Documents ( List )
-    - Document ID ( String )
-    - Private Tag List ( String List )
-    - Comment List ( List )
-        - ID ( String )
-        - User Name ( String )
-        - Content ( String )
-        - Date ( Date )
-        - Visibility ( String )
+- Document ID ( String )
+- Private Tag List ( String List )
+
+## **Comments collection**
+If the visibility is set to public, the  location is null
+
+- **ID** ( String )
+- Username ( String )
+- Document ID ( String )
+- Content ( String )
+- Date ( Date )
+- Visibility ( String )
+- Location ( String )
+    - Username ( String )
+    - Group ID ( String )
 
 ## **Deletable-Documents collection**
 - **ID** ( String )
