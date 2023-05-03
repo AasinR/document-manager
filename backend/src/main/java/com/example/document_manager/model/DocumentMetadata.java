@@ -1,23 +1,28 @@
 package com.example.document_manager.model;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Data
+@Document("metadata-versions")
 public class DocumentMetadata {
-    // modification data
-    private String userName;
-    private int metadataVersion;
+    @Id
+    private String id;
+    private String username;
+    private String documentId;
     private LocalDate modificationDate;
-
-    // document related data
+    private Set<String> tagList;
     private String title;
     private List<String> authorList;
     private String description;
     private LocalDate publicationDate;
-    private List<String> identifierList;
-    private List<String> relatedDocumentList;
-    private List<String> tagList;
+    private Set<String> relatedDocumentList;
+    private Map<String, String> identifierList;
+    private Map<String, String> otherData;
 }

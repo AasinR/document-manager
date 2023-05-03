@@ -4,13 +4,14 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
+import java.util.Set;
 
 @Data
-@Document("deletable-documents")
-public class DeletableDocuments {
+@Document("saved-documents")
+public class SavedDocument {
     @Id
     private String id;
+    private String ownerId;
     private String documentId;
-    private LocalDate date;
+    private Set<String> tagList;
 }
