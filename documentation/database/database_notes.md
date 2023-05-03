@@ -55,6 +55,14 @@ If the visibility is set to public, the  location is null
 - Document ID ( String )
 - Private Tag List ( String List )
 
+## **Tags collection**
+- **ID** ( String )
+- Name ( String )
+- Visibility ( String )
+- Owner ( String )
+    - Username ( String )
+    - Group ID ( String )
+
 ## **Comments collection**
 If the visibility is set to public, the  location is null
 
