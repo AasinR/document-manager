@@ -1,8 +1,8 @@
 package com.example.document_manager.controller;
 
+import com.example.document_manager.exception.DataNotFoundException;
+import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.model.DocumentTag;
-import com.example.document_manager.model.Group;
-import com.example.document_manager.model.User;
 import com.example.document_manager.service.DocumentTagService;
 import com.example.document_manager.service.GroupService;
 import com.example.document_manager.service.UserService;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/tags")
@@ -37,83 +36,67 @@ public class DocumentTagController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
-        Optional<DocumentTag> documentTag = documentTagService.getById(id);
-        if (documentTag.isPresent()) {
-            return new ResponseEntity<>(documentTag, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(String.format("Tag with id \"%s\" does not exist!", id), HttpStatus.NOT_FOUND);
+        DocumentTag documentTag = documentTagService.getById(id)
+                .orElseThrow(() -> new DataNotFoundException("DocumentTag", id));
+        return new ResponseEntity<>(documentTag, HttpStatus.OK);
     }
 
     @PostMapping("/add/user/{username}")
     public ResponseEntity<?> addUserTag(@PathVariable String username, @RequestBody Map<String, String> requestBody) {
-        Optional<User> user = userService.getByUsername(username);
-        if (user.isEmpty()) {
-            return new ResponseEntity<>(String.format("User with username \"%s\" does not exist!", username), HttpStatus.NOT_FOUND);
-        }
+        userService.getByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("User", username));
 
         String tagName = requestBody.get("name");
         if (tagName == null || tagName.isBlank()) {
-            return new ResponseEntity<>("The given field is required and cannot be empty!", HttpStatus.BAD_REQUEST);
+            throw new InvalidInputException(true, "name");
         }
 
-        Optional<DocumentTag> documentTag = documentTagService.addTag(username, tagName);
-        if (documentTag.isPresent()) {
-            return new ResponseEntity<>(documentTag, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Failed to create tag!", HttpStatus.CONFLICT);
+        DocumentTag documentTag = documentTagService.addTag(username, tagName)
+                .orElseThrow(() -> new RuntimeException("Failed to create tag!"));
+        return new ResponseEntity<>(documentTag, HttpStatus.CREATED);
     }
 
     @PostMapping("/add/group/{groupId}")
     public ResponseEntity<?> addGroupTag(@PathVariable String groupId, @RequestBody Map<String, String> requestBody) {
-        Optional<Group> group = groupService.getById(groupId);
-        if (group.isEmpty()) {
-            return new ResponseEntity<>(String.format("Group with id \"%s\" does not exist!", groupId), HttpStatus.NOT_FOUND);
-        }
+        groupService.getById(groupId)
+                .orElseThrow(() -> new DataNotFoundException("Group", groupId));
 
         String tagName = requestBody.get("name");
         if (tagName == null || tagName.isBlank()) {
-            return new ResponseEntity<>("The given field is required and cannot be empty!", HttpStatus.BAD_REQUEST);
+            throw new InvalidInputException(true, "name");
         }
 
-        Optional<DocumentTag> documentTag = documentTagService.addTag(groupId, tagName);
-        if (documentTag.isPresent()) {
-            return new ResponseEntity<>(documentTag, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Failed to create tag!", HttpStatus.CONFLICT);
+        DocumentTag documentTag = documentTagService.addTag(groupId, tagName)
+                .orElseThrow(() -> new RuntimeException("Failed to create tag!"));
+        return new ResponseEntity<>(documentTag, HttpStatus.CREATED);
     }
 
     @PostMapping("/add/public")
     public ResponseEntity<?> addPublicTag(@RequestBody Map<String, String> requestBody) {
         String tagName = requestBody.get("name");
         if (tagName == null || tagName.isBlank()) {
-            return new ResponseEntity<>("The given field is required and cannot be empty!", HttpStatus.BAD_REQUEST);
+            throw new InvalidInputException(true, "name");
         }
 
-        Optional<DocumentTag> documentTag = documentTagService.addTag(null, tagName);
-        if (documentTag.isPresent()) {
-            return new ResponseEntity<>(documentTag, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Failed to create tag!", HttpStatus.CONFLICT);
+        DocumentTag documentTag = documentTagService.addTag(null, tagName)
+                .orElseThrow(() -> new RuntimeException("Failed to create tag!"));
+        return new ResponseEntity<>(documentTag, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateTag(@PathVariable String id, @RequestBody DocumentTag requestBody) {
-        Optional<DocumentTag> documentTag = documentTagService.getById(id);
-        if (documentTag.isEmpty()) {
-            return new ResponseEntity<>(String.format("Tag with id \"%s\" does not exist!", id), HttpStatus.NOT_FOUND);
-        }
+        DocumentTag documentTag = documentTagService.getById(id)
+                .orElseThrow(() -> new DataNotFoundException("DocumentTag", id));
 
         String tagName = requestBody.getName();
         if (tagName == null || tagName.isBlank()) {
-            return new ResponseEntity<>("The given field is required and cannot be empty!", HttpStatus.BAD_REQUEST);
+            throw new InvalidInputException(true, "name");
         }
 
-        documentTag.get().setName(tagName);
-        Optional<DocumentTag> updatedDocumentTag = documentTagService.updateTag(documentTag.get());
-        if (updatedDocumentTag.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>("Failed to update tag!", HttpStatus.INTERNAL_SERVER_ERROR);
+        documentTag.setName(tagName);
+        documentTagService.updateTag(documentTag)
+                .orElseThrow(() -> new RuntimeException("Failed to update tag!"));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/delete/{id}")

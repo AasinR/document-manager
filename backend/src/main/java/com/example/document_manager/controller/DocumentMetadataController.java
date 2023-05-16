@@ -1,7 +1,8 @@
 package com.example.document_manager.controller;
 
+import com.example.document_manager.exception.DataNotFoundException;
+import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.model.DocumentMetadata;
-import com.example.document_manager.model.User;
 import com.example.document_manager.service.DocumentMetadataService;
 import com.example.document_manager.service.UserService;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/metadata")
@@ -27,11 +27,9 @@ public class DocumentMetadataController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
-        Optional<DocumentMetadata> metadata = metadataService.getById(id);
-        if (metadata.isPresent()) {
-            return new ResponseEntity<>(metadata, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(String.format("Metadata with id \"%s\" does not exist!", id), HttpStatus.NOT_FOUND);
+        DocumentMetadata metadata = metadataService.getById(id)
+                .orElseThrow(() -> new DataNotFoundException("DocumentMetadata", id));
+        return new ResponseEntity<>(metadata, HttpStatus.OK);
     }
 
     @PostMapping("/add/{documentId}")
@@ -41,13 +39,11 @@ public class DocumentMetadataController {
         String username = requestBody.getUsername();
         String title = requestBody.getTitle();
         if (username == null || username.isBlank() || title == null || title.isBlank()) {
-            return new ResponseEntity<>("Invalid input: \"username\" and \"title\" fields are required!", HttpStatus.BAD_REQUEST);
+            throw new InvalidInputException(true, "username", "title");
         }
 
-        Optional<User> user = userService.getByUsername(username);
-        if (user.isEmpty()) {
-            return new ResponseEntity<>(String.format("User with username \"%s\" does not exist!", username), HttpStatus.NOT_FOUND);
-        }
+        userService.getByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("User", username));
 
         DocumentMetadata metadata = new DocumentMetadata(
                 username,
@@ -59,11 +55,9 @@ public class DocumentMetadataController {
                 requestBody.getIdentifierList(),
                 requestBody.getOtherData()
         );
-        Optional<DocumentMetadata> addedMetadata = metadataService.addMetadata(metadata);
-        if (addedMetadata.isPresent()) {
-            return new ResponseEntity<>(addedMetadata, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Failed to create document metadata!", HttpStatus.CONFLICT);
+        DocumentMetadata addedMetadata = metadataService.addMetadata(metadata)
+                .orElseThrow(() -> new RuntimeException("Failed to create document metadata!"));
+        return new ResponseEntity<>(addedMetadata, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete/{id}")

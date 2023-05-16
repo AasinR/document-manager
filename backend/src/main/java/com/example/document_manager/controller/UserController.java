@@ -1,5 +1,8 @@
 package com.example.document_manager.controller;
 
+import com.example.document_manager.exception.DataExistsException;
+import com.example.document_manager.exception.DataNotFoundException;
+import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.model.User;
 import com.example.document_manager.service.UserService;
 import lombok.AllArgsConstructor;
@@ -9,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -25,47 +27,39 @@ public class UserController {
 
     @GetMapping("/get/{username}")
     public ResponseEntity<?> getByUsername(@PathVariable String username) {
-        Optional<User> user = userService.getByUsername(username);
-        if (user.isPresent()) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(String.format("User with username \"%s\" does not exist!", username), HttpStatus.NOT_FOUND);
+        User user = userService.getByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("User", username));
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody Map<String, String> requestBody) {
         String username = requestBody.get("username");
-        if (username == null || username.trim().isEmpty()) {
-            return new ResponseEntity<>("The \"username\" field is required and cannot be empty!", HttpStatus.BAD_REQUEST);
+        if (username == null || username.isBlank()) {
+            throw new InvalidInputException(true, "username");
         }
 
-        Optional<User> user = userService.addUser(username);
-        if (user.isPresent()) {
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(String.format("User with username \"%s\" already exists!", username), HttpStatus.CONFLICT);
+        User user = userService.addUser(username)
+                .orElseThrow(() -> new DataExistsException("User", username));
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{username}")
     public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User requestBody) {
-        Optional<User> user = userService.getByUsername(username);
-        if (user.isEmpty()) {
-            return new ResponseEntity<>(String.format("User with username \"%s\" does not exist!", username), HttpStatus.NOT_FOUND);
-        }
+        User user = userService.getByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("User", username));
 
         String shownName = requestBody.getShownName();
         String email = requestBody.getEmail();
-        if ((shownName != null && shownName.trim().isEmpty()) || (email != null && email.trim().isEmpty())) {
-            return new ResponseEntity<>("The given fields cannot be empty!", HttpStatus.BAD_REQUEST);
+        if ((shownName != null && shownName.isBlank()) || (email != null && email.isBlank())) {
+            throw new InvalidInputException(false, "shownName", "email");
         }
 
-        user.get().setShownName(shownName);
-        user.get().setEmail(email);
-        Optional<User> updatedUser = userService.updateUser(user.get());
-        if (updatedUser.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(String.format("Failed to update user \"%s\"!", username), HttpStatus.OK);
+        user.setShownName(shownName);
+        user.setEmail(email);
+        userService.updateUser(user)
+                .orElseThrow(() -> new RuntimeException("Failed to update user!"));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/delete/{username}")

@@ -33,12 +33,7 @@ public class UserService {
     }
 
     public Optional<User> updateUser(User user) {
-        try {
-            return Optional.of(userRepository.save(user));
-        }
-        catch (Exception e) {
-            return Optional.empty();
-        }
+        return Optional.of(userRepository.save(user));
     }
 
     public void deleteUser(String username) {
