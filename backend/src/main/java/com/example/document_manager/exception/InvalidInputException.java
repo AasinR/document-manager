@@ -10,4 +10,8 @@ public class InvalidInputException extends RuntimeException {
     public InvalidInputException(boolean isRequired, String... values) {
         super("The given fields " + (isRequired ? "are required and " : "") + "cannot be empty: " + Arrays.toString(values));
     }
+
+    public InvalidInputException(String message) {
+        super(message);
+    }
 }
