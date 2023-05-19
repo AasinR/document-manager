@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/saved")
@@ -70,10 +71,21 @@ public class SavedDocumentController {
             throw new InvalidInputException(false, "description");
         }
 
+        String fileHash = fileService.calculateSHA256(file)
+                .orElseThrow(() -> new RuntimeException("Failed to calculate file hash!"));
+
+        Optional<String> documentId = fileService.exists(fileHash);
+        if (documentId.isPresent()) {
+            SavedDocument savedDocument = savedDocumentService.save(username, documentId.get())
+                    .orElseThrow(() -> new DataExistsException(String.format("Document with ID \"%s\" is already saved!", documentId.get())));
+            return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
+        }
+
+
         String fileId = fileService.save(file)
                 .orElseThrow(() -> new RuntimeException("Failed to save file!"));
 
-        SavedDocument savedDocument = savedDocumentService.add(username, data, fileId)
+        SavedDocument savedDocument = savedDocumentService.add(username, data, fileId, fileHash)
                 .orElseThrow(() -> new RuntimeException("Failed to create document!"));
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }

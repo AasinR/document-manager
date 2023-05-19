@@ -29,10 +29,11 @@ public class SavedDocumentService {
         return savedDocumentRepository.findById(id);
     }
 
-    public Optional<SavedDocument> add(String ownerId, CreateDocumentRequest data, String fileId) {
+    public Optional<SavedDocument> add(String ownerId, CreateDocumentRequest data, String fileId, String fileHash) {
         // save incomplete document data
         DocumentData documentData = new DocumentData(
                 fileId,
+                fileHash,
                 ownerId,
                 null,
                 Visibility.PRIVATE
@@ -62,7 +63,7 @@ public class SavedDocumentService {
 
     public Optional<SavedDocument> save(String ownerId, String documentId) {
         SavedDocument savedDocument = new SavedDocument(ownerId, documentId);
-        if (savedDocumentRepository.existsByOwnerIdAndDocumentId(ownerId, documentId)) {
+        if (!savedDocumentRepository.existsByOwnerIdAndDocumentId(ownerId, documentId)) {
             return Optional.of(savedDocumentRepository.insert(savedDocument));
         }
         return Optional.empty();
