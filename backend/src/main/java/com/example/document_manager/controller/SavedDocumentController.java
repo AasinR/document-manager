@@ -45,10 +45,26 @@ public class SavedDocumentController {
             @PathVariable String username,
             @RequestPart("file") MultipartFile file,
             @RequestParam("data") String requestBody
-            ) {
+    ) {
         userService.getByUsername(username)
                 .orElseThrow(() -> new DataNotFoundException("User", username));
 
+        return addToLibrary(username, file, requestBody);
+    }
+
+    @PostMapping(value = "/add/group/{groupId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SavedDocument> addToGroupLibrary(
+            @PathVariable String groupId,
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("data") String requestBody
+    ) {
+        groupService.getById(groupId)
+                .orElseThrow(() -> new DataNotFoundException("Group", groupId));
+
+        return addToLibrary(groupId, file, requestBody);
+    }
+
+    private ResponseEntity<SavedDocument> addToLibrary(String ownerId, MultipartFile file, String requestBody) {
         CreateDocumentRequest data;
         try {
             data = new ObjectMapper().readValue(requestBody, CreateDocumentRequest.class);
@@ -76,7 +92,7 @@ public class SavedDocumentController {
 
         Optional<String> documentId = fileService.exists(fileHash);
         if (documentId.isPresent()) {
-            SavedDocument savedDocument = savedDocumentService.save(username, documentId.get())
+            SavedDocument savedDocument = savedDocumentService.save(ownerId, documentId.get())
                     .orElseThrow(() -> new DataExistsException(String.format("Document with ID \"%s\" is already saved!", documentId.get())));
             return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
         }
@@ -85,7 +101,7 @@ public class SavedDocumentController {
         String fileId = fileService.save(file)
                 .orElseThrow(() -> new RuntimeException("Failed to save file!"));
 
-        SavedDocument savedDocument = savedDocumentService.add(username, data, fileId, fileHash)
+        SavedDocument savedDocument = savedDocumentService.add(ownerId, data, fileId, fileHash)
                 .orElseThrow(() -> new RuntimeException("Failed to create document!"));
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
@@ -95,15 +111,7 @@ public class SavedDocumentController {
         userService.getByUsername(username)
                 .orElseThrow(() -> new DataNotFoundException("User", username));
 
-        if (documentId == null || documentId.isBlank()) {
-            throw new InvalidInputException(true, "documentId");
-        }
-        documentDataService.getById(documentId)
-                .orElseThrow(() -> new DataNotFoundException("DocumentData", documentId));
-
-        SavedDocument savedDocument = savedDocumentService.save(username, documentId)
-                .orElseThrow(() -> new DataExistsException(String.format("Document with ID \"%s\" is already saved!", documentId)));
-        return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
+        return saveToLibrary(username, documentId);
     }
 
     @PostMapping("/save/group/{groupId}")
@@ -111,13 +119,17 @@ public class SavedDocumentController {
         groupService.getById(groupId)
                 .orElseThrow(() -> new DataNotFoundException("Group", groupId));
 
+        return saveToLibrary(groupId, documentId);
+    }
+
+    private ResponseEntity<SavedDocument> saveToLibrary(String ownerId, String documentId) {
         if (documentId == null || documentId.isBlank()) {
             throw new InvalidInputException(true, "documentId");
         }
         documentDataService.getById(documentId)
                 .orElseThrow(() -> new DataNotFoundException("DocumentData", documentId));
 
-        SavedDocument savedDocument = savedDocumentService.save(groupId, documentId)
+        SavedDocument savedDocument = savedDocumentService.save(ownerId, documentId)
                 .orElseThrow(() -> new DataExistsException(String.format("Document with ID \"%s\" is already saved!", documentId)));
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
