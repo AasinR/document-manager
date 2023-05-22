@@ -3,6 +3,8 @@ package com.example.document_manager.controller;
 import com.example.document_manager.exception.DataExistsException;
 import com.example.document_manager.exception.DataNotFoundException;
 import com.example.document_manager.exception.InvalidInputException;
+import com.example.document_manager.exception.UnauthorizedException;
+import com.example.document_manager.model.DocumentTag;
 import com.example.document_manager.model.SavedDocument;
 import com.example.document_manager.model.request.CreateDocumentRequest;
 import com.example.document_manager.service.*;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class SavedDocumentController {
     private final SavedDocumentService savedDocumentService;
     private final DocumentDataService documentDataService;
+    private final DocumentTagService documentTagService;
     private final UserService userService;
     private final GroupService groupService;
     private final FileService fileService;
@@ -134,9 +137,39 @@ public class SavedDocumentController {
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
 
-    //TODO: add tag
+    @PutMapping("/tag/add/{saveId}")
+    public ResponseEntity<Void> addTag(@PathVariable String saveId, @RequestParam("tagId") String tagId) {
+        SavedDocument savedDocument = validateTagRequest(saveId, tagId);
 
-    // TODO: remove tag
+        savedDocumentService.addTag(savedDocument, tagId)
+                .orElseThrow(() -> new DataExistsException(String.format("Tag with ID \"%s\" is already added to the document!", tagId)));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/tag/remove/{saveId}")
+    public ResponseEntity<Void> removeTag(@PathVariable String saveId, @RequestParam("tagId") String tagId) {
+        SavedDocument savedDocument = validateTagRequest(saveId, tagId);
+
+        savedDocumentService.removeTag(savedDocument, tagId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    private SavedDocument validateTagRequest(String saveId, String tagId) {
+        SavedDocument savedDocument = savedDocumentService.getById(saveId)
+                .orElseThrow(() -> new DataNotFoundException("SavedDocument", saveId));
+
+        if (tagId == null || tagId.isBlank()) {
+            throw new InvalidInputException(true, "tagId");
+        }
+        DocumentTag documentTag = documentTagService.getById(tagId)
+                .orElseThrow(() -> new DataNotFoundException("DocumentTag", tagId));
+
+        if (!documentTag.getOwnerId().equals(savedDocument.getOwnerId())) {
+            throw new UnauthorizedException("Owner mismatch!");
+        }
+
+        return savedDocument;
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteSavedDocument(@PathVariable String id) {

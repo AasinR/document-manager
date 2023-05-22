@@ -69,6 +69,21 @@ public class SavedDocumentService {
         return Optional.empty();
     }
 
+    public Optional<SavedDocument> addTag(SavedDocument savedDocument, String tagId) {
+        boolean isPresent = savedDocument.getTagList().add(tagId);
+        if (isPresent) {
+            return Optional.of(savedDocumentRepository.save(savedDocument));
+        }
+        return Optional.empty();
+    }
+
+    public void removeTag(SavedDocument savedDocument, String tagId) {
+        boolean isRemoved = savedDocument.getTagList().remove(tagId);
+        if (isRemoved) {
+            savedDocumentRepository.save(savedDocument);
+        }
+    }
+
     public void delete(String id) {
         savedDocumentRepository.deleteById(id);
     }
