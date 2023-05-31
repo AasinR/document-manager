@@ -1,6 +1,5 @@
 package com.example.document_manager.service;
 
-import com.example.document_manager.enums.Visibility;
 import com.example.document_manager.model.DocumentData;
 import com.example.document_manager.repository.DocumentDataRepository;
 import lombok.AllArgsConstructor;
@@ -14,8 +13,8 @@ import java.util.Optional;
 public class DocumentDataService {
     private final DocumentDataRepository documentDataRepository;
 
-    public List<DocumentData> getAllPublic() {
-        return documentDataRepository.findAllByVisibility(Visibility.PUBLIC);
+    public List<DocumentData> getAll() {
+        return documentDataRepository.findAll();
     }
 
     public List<DocumentData> getAllByOwner(String ownerId) {

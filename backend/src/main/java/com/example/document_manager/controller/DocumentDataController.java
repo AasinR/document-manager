@@ -16,9 +16,9 @@ import java.util.List;
 public class DocumentDataController {
     private final DocumentDataService documentDataService;
 
-    @GetMapping("/all/public")
-    public ResponseEntity<List<DocumentData>> getAllPublic() {
-        List<DocumentData> documentDataList = documentDataService.getAllPublic();
+    @GetMapping("/all")
+    public ResponseEntity<List<DocumentData>> getAll() {
+        List<DocumentData> documentDataList = documentDataService.getAll();
         return new ResponseEntity<>(documentDataList, HttpStatus.OK);
     }
 
@@ -34,8 +34,6 @@ public class DocumentDataController {
                 .orElseThrow(() -> new DataNotFoundException("DocumentData", id));
         return new ResponseEntity<>(documentData, HttpStatus.OK);
     }
-
-    // TODO: update  visibility
 
     // TODO: update metadata
 

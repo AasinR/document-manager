@@ -1,6 +1,5 @@
 package com.example.document_manager.repository;
 
-import com.example.document_manager.enums.Visibility;
 import com.example.document_manager.model.DocumentData;
 import com.example.document_manager.model.projection.DocumentIdProjection;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,8 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface DocumentDataRepository extends MongoRepository<DocumentData, String> {
-    List<DocumentData> findAllByVisibility(Visibility visibility);
-
     List<DocumentData> findAllByOwnerId(String ownerId);
 
     Optional<DocumentIdProjection> findIdByFileHash(String fileHash);

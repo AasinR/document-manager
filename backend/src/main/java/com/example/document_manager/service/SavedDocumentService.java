@@ -1,6 +1,5 @@
 package com.example.document_manager.service;
 
-import com.example.document_manager.enums.Visibility;
 import com.example.document_manager.model.DocumentData;
 import com.example.document_manager.model.DocumentMetadata;
 import com.example.document_manager.model.SavedDocument;
@@ -35,8 +34,7 @@ public class SavedDocumentService {
                 fileId,
                 fileHash,
                 ownerId,
-                null,
-                Visibility.PRIVATE
+                null
         );
         DocumentData savedDocumentData = documentDataRepository.insert(documentData);
 
