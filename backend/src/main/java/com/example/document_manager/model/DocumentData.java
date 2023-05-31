@@ -15,12 +15,12 @@ public class DocumentData {
     private String id;
     private String fileId;
     @Indexed
-    private String fileHash;
+    private byte[] fileHash;
     private String ownerId;
     @DBRef
     private DocumentMetadata metadata;
 
-    public DocumentData(String fileId, String fileHash, String ownerId, DocumentMetadata metadata) {
+    public DocumentData(String fileId, byte[] fileHash, String ownerId, DocumentMetadata metadata) {
         this.fileId = fileId;
         this.fileHash = fileHash;
         this.ownerId = ownerId;

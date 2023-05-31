@@ -90,7 +90,7 @@ public class SavedDocumentController {
             throw new InvalidInputException(false, "description");
         }
 
-        String fileHash = fileService.calculateSHA256(file)
+        byte[] fileHash = fileService.calculateSHA256(file)
                 .orElseThrow(() -> new RuntimeException("Failed to calculate file hash!"));
 
         Optional<String> documentId = fileService.exists(fileHash);

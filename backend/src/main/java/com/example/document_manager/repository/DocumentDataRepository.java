@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface DocumentDataRepository extends MongoRepository<DocumentData, String> {
     List<DocumentData> findAllByOwnerId(String ownerId);
 
-    Optional<DocumentIdProjection> findIdByFileHash(String fileHash);
+    Optional<DocumentIdProjection> findIdByFileHash(byte[] fileHash);
 }

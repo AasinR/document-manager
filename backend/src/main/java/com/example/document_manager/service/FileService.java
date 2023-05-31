@@ -50,21 +50,16 @@ public class FileService {
         gridFsTemplate.delete(Query.query(Criteria.where("_id").is(fileId)));
     }
 
-    public Optional<String> exists(String fileHash) {
+    public Optional<String> exists(byte[] fileHash) {
         Optional<DocumentIdProjection> documentIdProjection = documentDataRepository.findIdByFileHash(fileHash);
         return documentIdProjection.map(DocumentIdProjection::id);
     }
 
-    public Optional<String> calculateSHA256(MultipartFile file) {
+    public Optional<byte[]> calculateSHA256(MultipartFile file) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(file.getBytes());
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                hexString.append(String.format("%02x", b));
-            }
-            return Optional.of(hexString.toString());
+            return Optional.of(hashBytes);
         }
         catch (NoSuchAlgorithmException | IOException e) {
             return Optional.empty();

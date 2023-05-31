@@ -28,7 +28,7 @@ public class SavedDocumentService {
         return savedDocumentRepository.findById(id);
     }
 
-    public Optional<SavedDocument> add(String ownerId, CreateDocumentRequest data, String fileId, String fileHash) {
+    public Optional<SavedDocument> add(String ownerId, CreateDocumentRequest data, String fileId, byte[] fileHash) {
         // save incomplete document data
         DocumentData documentData = new DocumentData(
                 fileId,
