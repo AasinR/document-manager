@@ -34,4 +34,8 @@ public class DocumentMetadataService {
     public void deleteMetadata(String id) {
         metadataRepository.deleteById(id);
     }
+
+    public void deleteAllByDocumentId(String documentId) {
+        metadataRepository.deleteAllByDocumentId(documentId);
+    }
 }

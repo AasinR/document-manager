@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface DocumentMetadataRepository extends MongoRepository<DocumentMetadata, String> {
     List<DocumentMetadata> findAllByDocumentId(String documentId);
+
+    void deleteAllByDocumentId(String documentId);
 }

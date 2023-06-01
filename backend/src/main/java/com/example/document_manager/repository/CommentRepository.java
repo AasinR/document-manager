@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends MongoRepository<Comment, String> {
     List<Comment> findAllByDocumentIdAndOwnerId(String documentId, String ownerId);
+
+    void deleteAllByDocumentId(String documentId);
 }

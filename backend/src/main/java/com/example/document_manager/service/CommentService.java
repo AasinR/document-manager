@@ -33,4 +33,8 @@ public class CommentService {
     public void delete(String id) {
         commentRepository.deleteById(id);
     }
+
+    public void deleteAllByDocumentId(String documentId) {
+        commentRepository.deleteAllByDocumentId(documentId);
+    }
 }
