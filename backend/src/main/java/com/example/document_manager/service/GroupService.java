@@ -59,4 +59,13 @@ public class GroupService {
     public void deleteGroup(String id) {
         groupRepository.deleteById(id);
     }
+
+    public boolean containsUser(Group group, String username) {
+        for (GroupMember member : group.getGroupMemberList()) {
+            if (member.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
