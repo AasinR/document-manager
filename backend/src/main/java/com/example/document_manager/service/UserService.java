@@ -1,5 +1,6 @@
 package com.example.document_manager.service;
 
+import com.example.document_manager.enums.UserPermission;
 import com.example.document_manager.model.User;
 import com.example.document_manager.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class UserService {
         return userRepository.findById(username);
     }
 
-    public Optional<User> addUser(String username) {
+    public Optional<User> add(String username) {
         User user = new User(username);
         try {
             return Optional.of(userRepository.insert(user));
@@ -32,11 +33,16 @@ public class UserService {
         }
     }
 
-    public Optional<User> updateUser(User user) {
+    public Optional<User> update(User user) {
         return Optional.of(userRepository.save(user));
     }
 
-    public void deleteUser(String username) {
+    public Optional<User> promote(User user) {
+        user.setPermission(UserPermission.ADMIN);
+        return Optional.of(userRepository.save(user));
+    }
+
+    public void delete(String username) {
         userRepository.deleteById(username);
     }
 }
