@@ -4,7 +4,6 @@ import com.example.document_manager.enums.GroupPermission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.Objects;
 
@@ -12,7 +11,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupMember {
-    @Indexed(unique = true)
     private String username;
     private GroupPermission permission;
 

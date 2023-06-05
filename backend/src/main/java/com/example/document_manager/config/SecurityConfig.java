@@ -25,7 +25,10 @@ public class SecurityConfig {
 
         httpSecurity.authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/authenticate").permitAll()
-                .requestMatchers("/api/v1/users/admin/**").hasAuthority(UserPermission.ADMIN.name())
+                .requestMatchers(
+                        "/api/v1/users/admin/**",
+                        "/api/v1/groups/admin/**"
+                ).hasAuthority(UserPermission.ADMIN.name())
                 .anyRequest().authenticated();
 
         httpSecurity
