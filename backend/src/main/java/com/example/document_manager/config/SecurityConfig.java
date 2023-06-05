@@ -27,7 +27,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/authenticate").permitAll()
                 .requestMatchers(
                         "/api/v1/users/admin/**",
-                        "/api/v1/groups/admin/**"
+                        "/api/v1/groups/admin/**",
+                        "/api/v1/comments/admin/**"
                 ).hasAuthority(UserPermission.ADMIN.name())
                 .anyRequest().authenticated();
 

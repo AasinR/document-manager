@@ -2,14 +2,14 @@ package com.example.document_manager.service;
 
 import com.example.document_manager.model.Comment;
 import com.example.document_manager.repository.CommentRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
 

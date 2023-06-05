@@ -5,25 +5,26 @@ import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.Comment;
 import com.example.document_manager.model.Group;
+import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.CommentRequest;
 import com.example.document_manager.service.CommentService;
 import com.example.document_manager.service.DocumentDataService;
 import com.example.document_manager.service.GroupService;
-import com.example.document_manager.service.UserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/v1/comments")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
     private final DocumentDataService documentDataService;
-    private final UserService userService;
     private final GroupService groupService;
 
     @GetMapping("/all/public/{documentId}")
@@ -33,7 +34,24 @@ public class CommentController {
     }
 
     @GetMapping("/all/private/{documentId}")
-    public ResponseEntity<List<Comment>> getAllByOwnerId(@PathVariable String documentId, @RequestParam String ownerId) {
+    public ResponseEntity<List<Comment>> getAllByOwner(@PathVariable String documentId, @RequestParam(required = false) String groupId) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String ownerId = user.getUsername();
+
+        if (groupId != null) {
+            Group group = groupService.getById(groupId)
+                    .orElseThrow(() -> new DataNotFoundException("Group", groupId));
+            if (!groupService.containsUser(group, user.getUsername())) {
+                throw new UnauthorizedException("User is not authorized to list comments from this group!");
+            }
+            ownerId = groupId;
+        }
+        List<Comment> commentList = commentService.getAllByOwnerId(documentId, ownerId);
+        return new ResponseEntity<>(commentList, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/all/private/{documentId}")
+    public ResponseEntity<List<Comment>> adminGetAllByOwner(@PathVariable String documentId, @RequestParam String ownerId) {
         if (ownerId == null || ownerId.isBlank()) {
             throw new InvalidInputException(true, "ownerId");
         }
@@ -49,63 +67,55 @@ public class CommentController {
     }
 
     @PostMapping("/add/public")
-    public ResponseEntity<Comment> addPublicComment(@RequestBody CommentRequest requestBody) {
-        validateCommentRequest(requestBody.documentId(), requestBody.username(), requestBody.content());
+    public ResponseEntity<Comment> addPublic(@RequestBody CommentRequest request) {
+        validateCommentRequest(request.documentId(), request.content());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Comment comment = commentService.add(requestBody.documentId(), null, requestBody.username(), requestBody.content())
+        Comment comment = commentService.add(request.documentId(), null, user.getUsername(), request.content())
                 .orElseThrow(() -> new RuntimeException("Failed to create comment!"));
         return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
-    @PostMapping("/add/user")
-    public ResponseEntity<Comment> addPrivateComment(@RequestBody CommentRequest requestBody) {
-        validateCommentRequest(requestBody.documentId(), requestBody.username(), requestBody.content());
+    @PostMapping("/add/private")
+    public ResponseEntity<Comment> addPrivate(@RequestParam(required = false) String groupId, @RequestBody CommentRequest request) {
+        validateCommentRequest(request.documentId(), request.content());
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String ownerId = user.getUsername();
 
-        Comment comment = commentService.add(requestBody.documentId(), requestBody.username(), requestBody.username(), requestBody.content())
-                .orElseThrow(() -> new RuntimeException("Failed to create comment!"));
-        return new ResponseEntity<>(comment, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/add/group")
-    public ResponseEntity<Comment> addGroupComment(@RequestBody CommentRequest requestBody) {
-        if (requestBody.ownerId() == null || requestBody.ownerId().isBlank()) {
-            throw new InvalidInputException(true, "ownerId");
+        if (groupId != null) {
+            Group group = groupService.getById(groupId)
+                    .orElseThrow(() -> new DataNotFoundException("Group", groupId));
+            if (!groupService.containsUser(group, user.getUsername())) {
+                throw new UnauthorizedException("User is not authorized to comment to this group!");
+            }
+            ownerId = groupId;
         }
-        Group group = groupService.getById(requestBody.ownerId())
-                .orElseThrow(() -> new DataNotFoundException("Group", requestBody.ownerId()));
-
-        validateCommentRequest(requestBody.documentId(), requestBody.username(), requestBody.content());
-
-        if (!groupService.containsUser(group, requestBody.username())) {
-            throw new UnauthorizedException("User is not part of the group!");
-        }
-
-        Comment comment = commentService.add(requestBody.documentId(), requestBody.ownerId(), requestBody.username(), requestBody.content())
+        Comment comment = commentService.add(request.documentId(), ownerId, user.getUsername(), request.content())
                 .orElseThrow(() -> new RuntimeException("Failed to create comment!"));
         return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
-    private void validateCommentRequest(String documentId, String username, String content) {
+    private void validateCommentRequest(String documentId, String content) {
+        if (documentId == null || documentId.isBlank() || content == null || content.isBlank()) {
+            throw new InvalidInputException(true, "documentId", "content");
+        }
         documentDataService.getById(documentId)
                 .orElseThrow(() -> new DataNotFoundException("Document", documentId));
-
-        if (username == null || username.isBlank() || content == null || content.isBlank()) {
-            throw new InvalidInputException(true, "username", "content");
-        }
-        userService.getByUsername(username)
-                .orElseThrow(() -> new DataNotFoundException("User", username));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody CommentRequest requestBody) {
+    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody CommentRequest request) {
         Comment comment = commentService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Comment", id));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (requestBody.content() == null || requestBody.content().isBlank()) {
+        if (!Objects.equals(comment.getUsername(), user.getUsername())) {
+            throw new UnauthorizedException("User is not authorized to update this comment!");
+        }
+        if (request.content() == null || request.content().isBlank()) {
             throw new InvalidInputException(true, "content");
         }
-
-        comment.setContent(requestBody.content());
+        comment.setContent(request.content());
         commentService.update(comment)
                 .orElseThrow(() -> new RuntimeException("Failed to update comment!"));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -113,6 +123,18 @@ public class CommentController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        Comment comment = commentService.getById(id)
+                .orElseThrow(() -> new DataNotFoundException("Comment", id));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!Objects.equals(comment.getUsername(), user.getUsername())) {
+            throw new UnauthorizedException("User is not authorized to delete this comment!");
+        }
+        commentService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/admin/delete/{id}")
+    public ResponseEntity<Void> adminDelete(@PathVariable String id) {
         commentService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
