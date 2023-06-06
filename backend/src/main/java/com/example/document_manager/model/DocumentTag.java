@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class DocumentTag {
     @Id
     private String id;
+    @Indexed
     private String name;
     @Indexed
     private String ownerId;

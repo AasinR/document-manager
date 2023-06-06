@@ -115,6 +115,10 @@ public class GroupService {
         return false;
     }
 
+    public boolean containsUser(String id, String username) {
+        return groupRepository.existsByIdAndGroupMemberListUsername(id, username);
+    }
+
     public Optional<GroupPermission> getUserPermission(Group group, String username) {
         for (GroupMember member : group.getGroupMemberList()) {
             if (member.getUsername().equals(username)) {

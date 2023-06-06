@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/api/v1/users/admin/**",
                         "/api/v1/groups/admin/**",
-                        "/api/v1/comments/admin/**"
+                        "/api/v1/comments/admin/**",
+                        "/api/v1/tags/admin/**"
                 ).hasAuthority(UserPermission.ADMIN.name())
                 .anyRequest().authenticated();
 

@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findAllByGroupMemberListUsername(String username);
+
+    boolean existsByIdAndGroupMemberListUsername(String id, String username);
 }

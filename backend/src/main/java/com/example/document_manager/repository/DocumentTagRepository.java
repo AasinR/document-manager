@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface DocumentTagRepository extends MongoRepository<DocumentTag, String> {
     List<DocumentTag> findAllByOwnerId(String ownerId);
+
+    boolean existsByOwnerIdAndName(String ownerId, String name);
 }
