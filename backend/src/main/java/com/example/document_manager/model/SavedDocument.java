@@ -3,6 +3,7 @@ package com.example.document_manager.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
@@ -16,7 +17,8 @@ public class SavedDocument {
     private String id;
     private String ownerId;
     private String documentId;
-    private Set<String> tagList;
+    @DBRef
+    private Set<DocumentTag> tagList;
 
     public SavedDocument(String ownerId, String documentId) {
         this.ownerId = ownerId;

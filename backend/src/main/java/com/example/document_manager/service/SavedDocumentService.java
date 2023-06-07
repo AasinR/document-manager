@@ -2,19 +2,21 @@ package com.example.document_manager.service;
 
 import com.example.document_manager.model.DocumentData;
 import com.example.document_manager.model.DocumentMetadata;
+import com.example.document_manager.model.DocumentTag;
 import com.example.document_manager.model.SavedDocument;
-import com.example.document_manager.model.request.CreateDocumentRequest;
+import com.example.document_manager.model.request.SaveAddRequest;
 import com.example.document_manager.repository.DocumentDataRepository;
 import com.example.document_manager.repository.DocumentMetadataRepository;
 import com.example.document_manager.repository.SavedDocumentRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SavedDocumentService {
     private final SavedDocumentRepository savedDocumentRepository;
     private final DocumentDataRepository documentDataRepository;
@@ -28,7 +30,7 @@ public class SavedDocumentService {
         return savedDocumentRepository.findById(id);
     }
 
-    public Optional<SavedDocument> add(String ownerId, CreateDocumentRequest data, String fileId, byte[] fileHash) {
+    public Optional<SavedDocument> add(String ownerId, SaveAddRequest data, String fileId, byte[] fileHash) {
         // save incomplete document data
         DocumentData documentData = new DocumentData(
                 fileId,
@@ -67,8 +69,8 @@ public class SavedDocumentService {
         return Optional.empty();
     }
 
-    public Optional<SavedDocument> addTag(SavedDocument savedDocument, String tagId) {
-        boolean isPresent = savedDocument.getTagList().add(tagId);
+    public Optional<SavedDocument> addTag(SavedDocument savedDocument, DocumentTag tag) {
+        boolean isPresent = savedDocument.getTagList().add(tag);
         if (isPresent) {
             return Optional.of(savedDocumentRepository.save(savedDocument));
         }
@@ -76,7 +78,7 @@ public class SavedDocumentService {
     }
 
     public void removeTag(SavedDocument savedDocument, String tagId) {
-        boolean isRemoved = savedDocument.getTagList().remove(tagId);
+        boolean isRemoved = savedDocument.getTagList().removeIf(tag -> Objects.equals(tag.getId(), tagId));
         if (isRemoved) {
             savedDocumentRepository.save(savedDocument);
         }
