@@ -35,4 +35,8 @@ public class DeletedDocumentService {
     public void delete(String id) {
         deletedDocumentRepository.deleteById(id);
     }
+
+    public void deleteByDocumentId(String documentId) {
+        deletedDocumentRepository.deleteByDocumentId(documentId);
+    }
 }

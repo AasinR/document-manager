@@ -7,6 +7,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @Document("documents")
@@ -16,14 +19,15 @@ public class DocumentData {
     private String fileId;
     @Indexed
     private byte[] fileHash;
-    private String ownerId;
     @DBRef
-    private DocumentMetadata metadata;
+    private Metadata metadata;
+    @DBRef
+    private Set<DocumentTag> tagList;
 
-    public DocumentData(String fileId, byte[] fileHash, String ownerId, DocumentMetadata metadata) {
+    public DocumentData(String fileId, byte[] fileHash, Metadata metadata) {
         this.fileId = fileId;
         this.fileHash = fileHash;
-        this.ownerId = ownerId;
         this.metadata = metadata;
+        this.tagList = new HashSet<>();
     }
 }

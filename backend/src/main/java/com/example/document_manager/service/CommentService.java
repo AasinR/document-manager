@@ -37,4 +37,12 @@ public class CommentService {
     public void deleteAllByDocumentId(String documentId) {
         commentRepository.deleteAllByDocumentId(documentId);
     }
+
+    public void migrate(String oldDocumentId, String newDocumentId) {
+        List<Comment> commentList = commentRepository.findAllByDocumentId(oldDocumentId);
+        for (Comment comment : commentList) {
+            comment.setDocumentId(newDocumentId);
+        }
+        commentRepository.saveAll(commentList);
+    }
 }

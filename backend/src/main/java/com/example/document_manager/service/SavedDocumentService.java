@@ -1,26 +1,24 @@
 package com.example.document_manager.service;
 
 import com.example.document_manager.model.DocumentData;
-import com.example.document_manager.model.DocumentMetadata;
+import com.example.document_manager.model.Metadata;
 import com.example.document_manager.model.DocumentTag;
 import com.example.document_manager.model.SavedDocument;
-import com.example.document_manager.model.request.SaveAddRequest;
+import com.example.document_manager.model.request.MetadataRequest;
 import com.example.document_manager.repository.DocumentDataRepository;
-import com.example.document_manager.repository.DocumentMetadataRepository;
+import com.example.document_manager.repository.MetadataRepository;
 import com.example.document_manager.repository.SavedDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class SavedDocumentService {
     private final SavedDocumentRepository savedDocumentRepository;
     private final DocumentDataRepository documentDataRepository;
-    private final DocumentMetadataRepository metadataRepository;
+    private final MetadataRepository metadataRepository;
 
     public List<SavedDocument> getAllByOwner(String ownerId) {
         return savedDocumentRepository.findAllByOwnerId(ownerId);
@@ -30,18 +28,17 @@ public class SavedDocumentService {
         return savedDocumentRepository.findById(id);
     }
 
-    public Optional<SavedDocument> add(String ownerId, SaveAddRequest data, String fileId, byte[] fileHash) {
+    public Optional<SavedDocument> add(String ownerId, MetadataRequest data, String fileId, byte[] fileHash) {
         // save incomplete document data
         DocumentData documentData = new DocumentData(
                 fileId,
                 fileHash,
-                ownerId,
                 null
         );
         DocumentData savedDocumentData = documentDataRepository.insert(documentData);
 
         // save metadata
-        DocumentMetadata metadata = new DocumentMetadata(
+        Metadata metadata = new Metadata(
                 null,
                 savedDocumentData.getId(),
                 data.title(),
@@ -51,7 +48,7 @@ public class SavedDocumentService {
                 data.identifierList(),
                 data.otherData()
         );
-        DocumentMetadata savedMetadata = metadataRepository.insert(metadata);
+        Metadata savedMetadata = metadataRepository.insert(metadata);
 
         // save metadata reference
         savedDocumentData.setMetadata(savedMetadata);
@@ -86,5 +83,26 @@ public class SavedDocumentService {
 
     public void delete(String id) {
         savedDocumentRepository.deleteById(id);
+    }
+
+    public void migrate(String oldDocumentId, String newDocumentId) {
+        List<SavedDocument> targetDocumentList = savedDocumentRepository.findAllByDocumentId(oldDocumentId);
+        Set<String> filterSet = new HashSet<>();
+        for (SavedDocument savedDocument : savedDocumentRepository.findAllByDocumentId(newDocumentId)) {
+            filterSet.add(savedDocument.getOwnerId());
+        }
+        List<SavedDocument> upateDocumentList = new ArrayList<>();
+        List<String> deleteDocumentList = new ArrayList<>();
+        for (SavedDocument savedDocument : targetDocumentList) {
+            if(filterSet.contains(savedDocument.getOwnerId())) {
+                deleteDocumentList.add(savedDocument.getId());
+            }
+            else {
+                savedDocument.setDocumentId(newDocumentId);
+                upateDocumentList.add(savedDocument);
+            }
+        }
+        savedDocumentRepository.deleteAllById(deleteDocumentList);
+        savedDocumentRepository.saveAll(upateDocumentList);
     }
 }

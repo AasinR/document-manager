@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeletedDocumentRepository extends MongoRepository<DeletedDocument, String> {
+    void deleteByDocumentId(String documentId);
 }

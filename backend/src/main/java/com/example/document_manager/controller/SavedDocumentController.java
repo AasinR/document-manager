@@ -7,8 +7,8 @@ import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.DocumentTag;
 import com.example.document_manager.model.SavedDocument;
 import com.example.document_manager.model.User;
-import com.example.document_manager.model.request.SaveAddRequest;
-import com.example.document_manager.model.request.SaveTagRequest;
+import com.example.document_manager.model.request.MetadataRequest;
+import com.example.document_manager.model.request.TagAddRequest;
 import com.example.document_manager.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,7 +56,7 @@ public class SavedDocumentController {
     public ResponseEntity<SavedDocument> add(
             @RequestParam(required = false) String groupId,
             @RequestPart MultipartFile file,
-            @RequestPart() SaveAddRequest metadata
+            @RequestPart() MetadataRequest metadata
     ) {
         if (file.isEmpty()) {
             throw new InvalidInputException(true, "file");
@@ -90,7 +90,7 @@ public class SavedDocumentController {
     }
 
     @PutMapping("/tag/add/{id}")
-    public ResponseEntity<Void> addTag(@PathVariable String id, @RequestBody SaveTagRequest request) {
+    public ResponseEntity<Void> addTag(@PathVariable String id, @RequestBody TagAddRequest request) {
         SavedDocument savedDocument = validateTagRequest(id, request);
         DocumentTag documentTag = documentTagService.getById(request.tagId())
                 .orElseThrow(() -> new DataNotFoundException("DocumentTag", request.tagId()));
@@ -103,13 +103,13 @@ public class SavedDocumentController {
     }
 
     @PutMapping("/tag/remove/{id}")
-    public ResponseEntity<Void> removeTag(@PathVariable String id, @RequestBody SaveTagRequest request) {
+    public ResponseEntity<Void> removeTag(@PathVariable String id, @RequestBody TagAddRequest request) {
         SavedDocument savedDocument = validateTagRequest(id, request);
         savedDocumentService.removeTag(savedDocument, request.tagId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private SavedDocument validateTagRequest(String saveId, SaveTagRequest request) {
+    private SavedDocument validateTagRequest(String saveId, TagAddRequest request) {
         if (request.tagId() == null || request.tagId().isBlank()) {
             throw new InvalidInputException(true, "tagId");
         }

@@ -4,11 +4,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,15 +16,13 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @Document("metadata-versions")
-public class DocumentMetadata {
+public class Metadata {
     @Id
     private String id;
     private String username;
     @Indexed
     private String documentId;
     private LocalDateTime timestamp;
-    @DBRef
-    private Set<DocumentTag> tagList;
     private Set<String> relatedDocumentList;
 
     private String title;
@@ -34,7 +32,7 @@ public class DocumentMetadata {
     private Map<String, String> identifierList;
     private Map<String, String> otherData;
 
-    public DocumentMetadata(String username, String documentId, String title, List<String> authorList, String description, LocalDate publicationDate, Map<String, String> identifierList, Map<String, String> otherData) {
+    public Metadata(String username, String documentId, String title, List<String> authorList, String description, LocalDate publicationDate, Map<String, String> identifierList, Map<String, String> otherData) {
         this.username = username;
         this.documentId = documentId;
         this.title = title;
@@ -45,5 +43,6 @@ public class DocumentMetadata {
         this.otherData = otherData;
 
         this.timestamp = LocalDateTime.now();
+        this.relatedDocumentList = new HashSet<>();
     }
 }

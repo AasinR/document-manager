@@ -19,7 +19,7 @@ import java.util.Optional;
 public class DeletedDocumentScheduler {
     private final DeletedDocumentService deletedDocumentService;
     private final DocumentDataService documentDataService;
-    private final DocumentMetadataService metadataService;
+    private final MetadataService metadataService;
     private final CommentService commentService;
     private final FileService fileService;
 

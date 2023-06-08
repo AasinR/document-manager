@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-public record SaveAddRequest(
+public record MetadataRequest(
         String title,
         List<String> authorList,
         String description,

@@ -30,7 +30,8 @@ public class SecurityConfig {
                         "/api/v1/groups/admin/**",
                         "/api/v1/comments/admin/**",
                         "/api/v1/tags/admin/**",
-                        "/api/v1/saved/admin/**"
+                        "/api/v1/saved/admin/**",
+                        "/api/v1/documents/admin/**"
                 ).hasAuthority(UserPermission.ADMIN.name())
                 .anyRequest().authenticated();
 

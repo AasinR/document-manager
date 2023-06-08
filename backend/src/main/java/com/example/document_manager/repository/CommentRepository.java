@@ -10,5 +10,7 @@ import java.util.List;
 public interface CommentRepository extends MongoRepository<Comment, String> {
     List<Comment> findAllByDocumentIdAndOwnerId(String documentId, String ownerId);
 
+    List<Comment> findAllByDocumentId(String documentId);
+
     void deleteAllByDocumentId(String documentId);
 }

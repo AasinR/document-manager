@@ -10,5 +10,7 @@ import java.util.List;
 public interface SavedDocumentRepository extends MongoRepository<SavedDocument, String> {
     List<SavedDocument> findAllByOwnerId(String ownerId);
 
+    List<SavedDocument> findAllByDocumentId(String documentId);
+
     boolean existsByOwnerIdAndDocumentId(String ownerId, String documentId);
 }
