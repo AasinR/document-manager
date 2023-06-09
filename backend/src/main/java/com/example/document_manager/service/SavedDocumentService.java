@@ -24,8 +24,20 @@ public class SavedDocumentService {
         return savedDocumentRepository.findAllByOwnerId(ownerId);
     }
 
+    public List<SavedDocument> getAllByOwnerIdList(List<String> ownerIdList) {
+        return savedDocumentRepository.findAllByOwnerIdIn(ownerIdList);
+    }
+
+    public List<SavedDocument> getAllByDocumentIdAndOwnerIdList(String documentId, List<String> ownerIdList) {
+        return savedDocumentRepository.findAllByDocumentIdAndOwnerIdIn(documentId, ownerIdList);
+    }
+
     public Optional<SavedDocument> getById(String id) {
         return savedDocumentRepository.findById(id);
+    }
+
+    public Optional<SavedDocument> getByOwnerIdAndDocumentId(String ownerId, String documentId) {
+        return savedDocumentRepository.findByOwnerIdAndDocumentId(ownerId, documentId);
     }
 
     public Optional<SavedDocument> add(String ownerId, MetadataRequest data, String fileId, byte[] fileHash) {

@@ -27,6 +27,14 @@ public class GroupService {
         return groupRepository.findById(id);
     }
 
+    public List<String> getGroupIdsByUsername(String username) {
+        List<String> groupIdList = new ArrayList<>();
+        groupRepository.findAllIdByGroupMemberListUsername(username).forEach(
+                groupIdProjection -> groupIdList.add(groupIdProjection.id())
+        );
+        return groupIdList;
+    }
+
     public Optional<Group> add(String username, String groupName) {
         Set<GroupMember> groupMemberList = Set.of(new GroupMember(username, GroupPermission.OWNER));
         Group group = new Group(groupName, groupMemberList);

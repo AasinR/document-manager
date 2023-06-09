@@ -2,14 +2,14 @@ package com.example.document_manager.controller;
 
 import com.example.document_manager.exception.DataNotFoundException;
 import com.example.document_manager.exception.UnauthorizedException;
-import com.example.document_manager.model.DocumentData;
-import com.example.document_manager.model.Metadata;
-import com.example.document_manager.model.DocumentTag;
-import com.example.document_manager.model.User;
+import com.example.document_manager.model.*;
 import com.example.document_manager.model.request.DocumentDuplicateRequest;
 import com.example.document_manager.model.request.MetadataRequest;
 import com.example.document_manager.model.request.RelatedDocumentRequest;
 import com.example.document_manager.model.request.TagAddRequest;
+import com.example.document_manager.model.response.DocumentResponse;
+import com.example.document_manager.model.response.DocumentTagCollection;
+import com.example.document_manager.model.response.GroupTagCollection;
 import com.example.document_manager.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/documents")
@@ -26,22 +27,85 @@ public class DocumentController {
     private final DeletedDocumentService deletedDocumentService;
     private final SavedDocumentService savedDocumentService;
     private final DocumentDataService documentDataService;
-    private final MetadataService metadataService;
     private final DocumentTagService documentTagService;
+    private final MetadataService metadataService;
     private final CommentService commentService;
+    private final GroupService groupService;
     private final FileService fileService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<DocumentData>> getAll() {
+    public ResponseEntity<List<DocumentResponse>> getAll() {
         List<DocumentData> documentDataList = documentDataService.getAll();
-        return new ResponseEntity<>(documentDataList, HttpStatus.OK);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> groupIdList = groupService.getGroupIdsByUsername(user.getUsername());
+
+        List<SavedDocument> privateSavedDocumentList = savedDocumentService.getAllByOwner(user.getUsername());
+        List<SavedDocument> groupSavedDocumentList = savedDocumentService.getAllByOwnerIdList(groupIdList);
+
+        List<DocumentResponse> response = documentDataList.stream()
+                .map(document -> {
+                    DocumentTagCollection documentTagCollection = new DocumentTagCollection(
+                            document.getTagList(),
+                            getPrivateTagSet(document.getId(), privateSavedDocumentList),
+                            getGroupTagCollectionList(document.getId(), groupSavedDocumentList)
+                    );
+                    return new DocumentResponse(
+                            document.getId(),
+                            document.getFileId(),
+                            document.getMetadata(),
+                            documentTagCollection
+                    );
+                })
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<DocumentData> getById(@PathVariable String id) {
+    public ResponseEntity<DocumentResponse> getById(@PathVariable String id) {
         DocumentData documentData = documentDataService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Document", id));
-        return new ResponseEntity<>(documentData, HttpStatus.OK);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> groupIdList = groupService.getGroupIdsByUsername(user.getUsername());
+        DocumentTagCollection documentTagCollection = new DocumentTagCollection(
+                documentData.getTagList(),
+                getPrivateTagSet(documentData.getId(), user.getUsername()),
+                getGroupTagCollectionList(groupIdList, documentData.getId())
+        );
+        DocumentResponse response = new DocumentResponse(
+                documentData.getId(),
+                documentData.getFileId(),
+                documentData.getMetadata(),
+                documentTagCollection
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private Set<DocumentTag> getPrivateTagSet(String documentId, List<SavedDocument> savedDocumentList) {
+        return savedDocumentList.stream()
+                .filter(document -> Objects.equals(document.getDocumentId(), documentId))
+                .findFirst()
+                .map(SavedDocument::getTagList)
+                .orElse(new HashSet<>());
+    }
+
+    private Set<DocumentTag> getPrivateTagSet(String documentId, String username) {
+        return savedDocumentService.getByOwnerIdAndDocumentId(username, documentId)
+                .map(SavedDocument::getTagList)
+                .orElse(new HashSet<>());
+    }
+
+    private List<GroupTagCollection> getGroupTagCollectionList(String documentId, List<SavedDocument> savedDocumentList) {
+        return savedDocumentList.stream()
+                .filter(document -> Objects.equals(document.getDocumentId(), documentId))
+                .map(document -> new GroupTagCollection(document.getOwnerId(), document.getTagList()))
+                .collect(Collectors.toList());
+    }
+
+    private List<GroupTagCollection> getGroupTagCollectionList(List<String> groupIdList, String documentId) {
+        return savedDocumentService.getAllByDocumentIdAndOwnerIdList(documentId, groupIdList)
+                .stream()
+                .map(document -> new GroupTagCollection(document.getOwnerId(), document.getTagList()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/metadata/all/{id}")
