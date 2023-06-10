@@ -1,11 +1,14 @@
 package com.example.document_manager.service;
 
 import com.example.document_manager.enums.GroupPermission;
+import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.Group;
 import com.example.document_manager.model.GroupMember;
+import com.example.document_manager.model.User;
 import com.example.document_manager.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -114,17 +117,20 @@ public class GroupService {
         groupRepository.deleteById(id);
     }
 
-    public boolean containsUser(Group group, String username) {
-        for (GroupMember member : group.getGroupMemberList()) {
-            if (member.getUsername().equals(username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean containsUser(String id, String username) {
         return groupRepository.existsByIdAndGroupMemberListUsername(id, username);
+    }
+
+    public String resolveOwnerId(String groupId) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String ownerId = user.getUsername();
+        if (groupId != null) {
+            if (!containsUser(groupId, user.getUsername())) {
+                throw new UnauthorizedException("User is not a member of this group!");
+            }
+            ownerId = groupId;
+        }
+        return ownerId;
     }
 
     public Optional<GroupPermission> getUserPermission(Group group, String username) {

@@ -3,7 +3,6 @@ package com.example.document_manager.controller;
 import com.example.document_manager.enums.GroupPermission;
 import com.example.document_manager.exception.DataExistsException;
 import com.example.document_manager.exception.DataNotFoundException;
-import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.Group;
 import com.example.document_manager.model.User;
@@ -35,8 +34,9 @@ public class GroupController {
 
     @GetMapping("/all/{username}")
     public ResponseEntity<List<Group>> getAllByUsername(@PathVariable String username) {
-        userService.getByUsername(username)
-                .orElseThrow(() -> new DataNotFoundException("User", username));
+        if (userService.doesNotExist(username)) {
+            throw new DataNotFoundException("User", username);
+        }
         List<Group> groupList = groupService.getAllByUsername(username);
         return new ResponseEntity<>(groupList, HttpStatus.OK);
     }
@@ -50,9 +50,7 @@ public class GroupController {
 
     @PostMapping("/add")
     public ResponseEntity<Group> add(@RequestBody GroupAddRequest request) {
-        if (request.groupName() == null || request.groupName().isBlank()) {
-            throw new InvalidInputException(true, "groupName");
-        }
+        request.validate();
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Group group = groupService.add(user.getUsername(), request.groupName())
                 .orElseThrow(() -> new RuntimeException("Failed to create group!"));
@@ -61,15 +59,12 @@ public class GroupController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> update(@PathVariable String id, @RequestBody GroupUpdateRequest request) {
+        request.validate();
         Group group = groupService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Group", id));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         if (groupService.isUnauthorized(group, user.getUsername(), GroupPermission.OWNER, GroupPermission.ADMIN)) {
             throw new UnauthorizedException("User is not authorized to update this group!");
-        }
-        if (request.groupName() == null || request.groupName().isBlank()) {
-            throw new InvalidInputException(true, "groupName");
         }
         group.setName(request.groupName());
         groupService.update(group)
@@ -79,19 +74,16 @@ public class GroupController {
 
     @PutMapping("/member/add/{id}")
     public ResponseEntity<Void> addMember(@PathVariable String id, @RequestBody GroupMemberRequest request) {
+        request.validate();
         Group group = groupService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Group", id));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         if (groupService.isUnauthorized(group, user.getUsername(), GroupPermission.OWNER, GroupPermission.ADMIN)) {
             throw new UnauthorizedException("User is not authorized to add new member to this group!");
         }
-        if (request.username() == null || request.username().isBlank()) {
-            throw new InvalidInputException(true, "username");
+        if (userService.doesNotExist(request.username())) {
+            throw new DataNotFoundException("User", request.username());
         }
-        userService.getByUsername(request.username())
-                .orElseThrow(() -> new DataNotFoundException("User", request.username()));
-
         groupService.addMember(group, request.username())
                 .orElseThrow(() -> new DataExistsException(String.format("Failed to add user with username \"%s\" to the group!", request.username())));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -99,6 +91,7 @@ public class GroupController {
 
     @PutMapping("/member/remove/{id}")
     public ResponseEntity<Void> removeMember(@PathVariable String id, @RequestBody GroupMemberRequest request) {
+        request.validate();
         Group group = groupService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Group", id));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -108,16 +101,11 @@ public class GroupController {
         if (groupService.isUnauthorized(userPermission, GroupPermission.OWNER, GroupPermission.ADMIN)) {
             throw new UnauthorizedException("User is not authorized to remove member from this group!");
         }
-        if (request.username() == null || request.username().isBlank()) {
-            throw new InvalidInputException(true, "username");
-        }
-
         GroupPermission removableUserPermission = groupService.getUserPermission(group, request.username())
                 .orElseThrow(() -> new DataNotFoundException("The given user is not a member of this group!"));
         if (removableUserPermission.isHigherOrSame(userPermission)) {
             throw new UnauthorizedException("User is not authorized to remove the given member!");
         }
-
         groupService.removeMember(group, request.username())
                 .orElseThrow(() -> new DataExistsException("Failed to remove user from the group!"));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -141,6 +129,7 @@ public class GroupController {
 
     @PutMapping("/member/promote/{id}")
     public ResponseEntity<Void> promoteMember(@PathVariable String id, @RequestBody GroupMemberRequest request) {
+        request.validate();
         Group group = groupService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Group", id));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -149,9 +138,6 @@ public class GroupController {
                 .orElseThrow(() -> new UnauthorizedException("User is not authorized to promote members in this group!"));
         if (userPermission == GroupPermission.MEMBER) {
             throw new UnauthorizedException("User is not authorized to promote members in this group!");
-        }
-        if (request.username() == null || request.username().isBlank()) {
-            throw new InvalidInputException(true, "username");
         }
         GroupPermission promotableUserPermission = groupService.getUserPermission(group, request.username())
                 .orElseThrow(() -> new DataNotFoundException("The given user is not a member of this group!"));
@@ -165,15 +151,13 @@ public class GroupController {
 
     @PutMapping("/member/demote/{id}")
     public ResponseEntity<Void> demoteMember(@PathVariable String id, @RequestBody GroupMemberRequest request) {
+        request.validate();
         Group group = groupService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Group", id));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (groupService.isUnauthorized(group, user.getUsername(), GroupPermission.OWNER)) {
             throw new UnauthorizedException("User in not authorized to demote members in this group!");
-        }
-        if (request.username() == null || request.username().isBlank()) {
-            throw new InvalidInputException(true, "username");
         }
         groupService.demoteMember(group, request.username())
                 .orElseThrow(() -> new RuntimeException("Failed to demote user!"));

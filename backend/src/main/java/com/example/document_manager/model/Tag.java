@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
-@Document("document-tags")
-public class DocumentTag {
+@Document("tags")
+public class Tag {
     @Id
     private String id;
     @Indexed
@@ -17,7 +17,7 @@ public class DocumentTag {
     @Indexed
     private String ownerId;
 
-    public DocumentTag(String name, String ownerId) {
+    public Tag(String name, String ownerId) {
         this.name = name;
         this.ownerId = ownerId;
     }

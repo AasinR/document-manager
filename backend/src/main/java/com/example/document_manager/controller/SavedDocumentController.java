@@ -4,11 +4,11 @@ import com.example.document_manager.exception.DataExistsException;
 import com.example.document_manager.exception.DataNotFoundException;
 import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.exception.UnauthorizedException;
-import com.example.document_manager.model.DocumentTag;
+import com.example.document_manager.model.Tag;
 import com.example.document_manager.model.SavedDocument;
 import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.MetadataRequest;
-import com.example.document_manager.model.request.TagAddRequest;
+import com.example.document_manager.model.request.DocumentTagRequest;
 import com.example.document_manager.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,13 @@ import java.util.Optional;
 public class SavedDocumentController {
     private final SavedDocumentService savedDocumentService;
     private final DocumentDataService documentDataService;
-    private final DocumentTagService documentTagService;
+    private final TagService tagService;
     private final GroupService groupService;
     private final FileService fileService;
 
     @GetMapping("/all")
     public ResponseEntity<List<SavedDocument>> getAllByOwner(@RequestParam(required = false) String groupId) {
-        String ownerId = getOwnerId(groupId);
+        String ownerId = groupService.resolveOwnerId(groupId);
         List<SavedDocument> savedDocumentList = savedDocumentService.getAllByOwner(ownerId);
         return new ResponseEntity<>(savedDocumentList, HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class SavedDocumentController {
             throw new InvalidInputException(true, "file");
         }
         metadata.validate();
-        String ownerId = getOwnerId(groupId);
+        String ownerId = groupService.resolveOwnerId(groupId);
         byte[] fileHash = fileService.calculateSHA256(file)
                 .orElseThrow(() -> new RuntimeException("Failed to calculate file hash!"));
         SavedDocument savedDocument;
@@ -81,38 +81,37 @@ public class SavedDocumentController {
 
     @PostMapping("/save/{documentId}")
     public ResponseEntity<SavedDocument> save(@PathVariable String documentId, @RequestParam(required = false) String groupId) {
-        String ownerId = getOwnerId(groupId);
-        documentDataService.getById(documentId)
-                .orElseThrow(() -> new DataNotFoundException("DocumentData", documentId));
+        String ownerId = groupService.resolveOwnerId(groupId);
+        if (documentDataService.doesNotExist(documentId)) {
+            throw new DataNotFoundException("Document", documentId);
+        }
         SavedDocument savedDocument = savedDocumentService.save(ownerId, documentId)
                 .orElseThrow(() -> new DataExistsException(String.format("Document with ID \"%s\" is already saved!", documentId)));
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
 
     @PutMapping("/tag/add/{id}")
-    public ResponseEntity<Void> addTag(@PathVariable String id, @RequestBody TagAddRequest request) {
+    public ResponseEntity<Void> addTag(@PathVariable String id, @RequestBody DocumentTagRequest request) {
         SavedDocument savedDocument = validateTagRequest(id, request);
-        DocumentTag documentTag = documentTagService.getById(request.tagId())
+        Tag tag = tagService.getById(request.tagId())
                 .orElseThrow(() -> new DataNotFoundException("DocumentTag", request.tagId()));
-        if (!Objects.equals(savedDocument.getOwnerId(), documentTag.getOwnerId())) {
+        if (!Objects.equals(savedDocument.getOwnerId(), tag.getOwnerId())) {
             throw new UnauthorizedException("Owner mismatch!");
         }
-        savedDocumentService.addTag(savedDocument, documentTag)
+        savedDocumentService.addTag(savedDocument, tag)
                 .orElseThrow(() -> new DataExistsException("Failed to add tag to the save!"));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/tag/remove/{id}")
-    public ResponseEntity<Void> removeTag(@PathVariable String id, @RequestBody TagAddRequest request) {
+    public ResponseEntity<Void> removeTag(@PathVariable String id, @RequestBody DocumentTagRequest request) {
         SavedDocument savedDocument = validateTagRequest(id, request);
         savedDocumentService.removeTag(savedDocument, request.tagId());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private SavedDocument validateTagRequest(String saveId, TagAddRequest request) {
-        if (request.tagId() == null || request.tagId().isBlank()) {
-            throw new InvalidInputException(true, "tagId");
-        }
+    private SavedDocument validateTagRequest(String saveId, DocumentTagRequest request) {
+        request.validate();
         SavedDocument savedDocument = savedDocumentService.getById(saveId)
                 .orElseThrow(() -> new DataNotFoundException("SavedDocument", saveId));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -144,17 +143,5 @@ public class SavedDocumentController {
         boolean validUser = Objects.equals(savedDocument.getOwnerId(), username);
         boolean validGroup = groupService.containsUser(savedDocument.getOwnerId(), username);
         return !(validUser || validGroup);
-    }
-
-    private String getOwnerId(String groupId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String ownerId = user.getUsername();
-        if (groupId != null) {
-            if (!groupService.containsUser(groupId, user.getUsername())) {
-                throw new UnauthorizedException("User is not a member of this group!");
-            }
-            ownerId = groupId;
-        }
-        return ownerId;
     }
 }

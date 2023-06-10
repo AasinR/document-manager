@@ -1,7 +1,6 @@
 package com.example.document_manager.controller;
 
 import com.example.document_manager.exception.DataNotFoundException;
-import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.AuthenticationRequest;
 import com.example.document_manager.model.response.AuthenticationResponse;
@@ -27,9 +26,7 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        if (request.username() == null || request.username().isBlank() || request.password() == null || request.password().isBlank()) {
-            throw new InvalidInputException(true, "username", "password");
-        }
+        request.validate();
         User user = userService.getByUsername(request.username())
                 .orElseThrow(() -> new DataNotFoundException("User", request.username()));
 

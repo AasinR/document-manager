@@ -13,7 +13,8 @@ public record MetadataRequest(
         LocalDate publicationDate,
         Map<String, String> identifierList,
         Map<String, String> otherData
-) {
+) implements RequestData {
+    @Override
     public void validate() {
         if (isInvalidTitle()) {
             throw new InvalidInputException(true, "title");
@@ -32,11 +33,11 @@ public record MetadataRequest(
         }
     }
 
-    public boolean isInvalidTitle() {
+    private boolean isInvalidTitle() {
         return title == null || title.isBlank();
     }
 
-    public boolean isInvalidAuthorList() {
+    private boolean isInvalidAuthorList() {
         if (authorList != null) {
             for (String author : authorList) {
                 if (author == null || author.isBlank()) {
@@ -47,15 +48,15 @@ public record MetadataRequest(
         return false;
     }
 
-    public boolean isInvalidDescription() {
+    private boolean isInvalidDescription() {
         return description != null && description.isBlank();
     }
 
-    public boolean isInvalidIdentifierList() {
+    private boolean isInvalidIdentifierList() {
         return validateMap(identifierList);
     }
 
-    public boolean isInvalidOtherData() {
+    private boolean isInvalidOtherData() {
         return validateMap(otherData);
     }
 

@@ -6,7 +6,7 @@ import com.example.document_manager.model.*;
 import com.example.document_manager.model.request.DocumentDuplicateRequest;
 import com.example.document_manager.model.request.MetadataRequest;
 import com.example.document_manager.model.request.RelatedDocumentRequest;
-import com.example.document_manager.model.request.TagAddRequest;
+import com.example.document_manager.model.request.DocumentTagRequest;
 import com.example.document_manager.model.response.DocumentResponse;
 import com.example.document_manager.model.response.DocumentTagCollection;
 import com.example.document_manager.model.response.GroupTagCollection;
@@ -27,7 +27,7 @@ public class DocumentController {
     private final DeletedDocumentService deletedDocumentService;
     private final SavedDocumentService savedDocumentService;
     private final DocumentDataService documentDataService;
-    private final DocumentTagService documentTagService;
+    private final TagService tagService;
     private final MetadataService metadataService;
     private final CommentService commentService;
     private final GroupService groupService;
@@ -80,7 +80,7 @@ public class DocumentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private Set<DocumentTag> getPrivateTagSet(String documentId, List<SavedDocument> savedDocumentList) {
+    private Set<Tag> getPrivateTagSet(String documentId, List<SavedDocument> savedDocumentList) {
         return savedDocumentList.stream()
                 .filter(document -> Objects.equals(document.getDocumentId(), documentId))
                 .findFirst()
@@ -88,7 +88,7 @@ public class DocumentController {
                 .orElse(new HashSet<>());
     }
 
-    private Set<DocumentTag> getPrivateTagSet(String documentId, String username) {
+    private Set<Tag> getPrivateTagSet(String documentId, String username) {
         return savedDocumentService.getByOwnerIdAndDocumentId(username, documentId)
                 .map(SavedDocument::getTagList)
                 .orElse(new HashSet<>());
@@ -109,13 +109,13 @@ public class DocumentController {
     }
 
     @GetMapping("/metadata/all/{id}")
-    public ResponseEntity<?> getAllMetadataByDocumentId(@PathVariable String id) {
+    public ResponseEntity<List<Metadata>> getAllMetadataByDocumentId(@PathVariable String id) {
         List<Metadata> metadataList = metadataService.getAllByDocumentId(id);
         return new ResponseEntity<>(metadataList, HttpStatus.OK);
     }
 
     @GetMapping("/metadata/get/{metadataId}")
-    public ResponseEntity<?> getMetadataById(@PathVariable String metadataId) {
+    public ResponseEntity<Metadata> getMetadataById(@PathVariable String metadataId) {
         Metadata metadata = metadataService.getById(metadataId)
                 .orElseThrow(() -> new DataNotFoundException("Metadata", metadataId));
         return new ResponseEntity<>(metadata, HttpStatus.OK);
@@ -133,22 +133,22 @@ public class DocumentController {
     }
 
     @PutMapping("/tag/add/{id}")
-    public ResponseEntity<Void> addTag(@PathVariable String id, @RequestBody TagAddRequest request) {
+    public ResponseEntity<Void> addTag(@PathVariable String id, @RequestBody DocumentTagRequest request) {
         request.validate();
         DocumentData documentData = documentDataService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Document", id));
-        DocumentTag documentTag = documentTagService.getById(request.tagId())
+        Tag tag = tagService.getById(request.tagId())
                 .orElseThrow(() -> new DataNotFoundException("DocumentTag", request.tagId()));
-        if (documentTag.getOwnerId() != null) {
+        if (tag.getOwnerId() != null) {
             throw new UnauthorizedException("Provided tag is not public!");
         }
-        documentDataService.addTag(documentData, documentTag)
+        documentDataService.addTag(documentData, tag)
                 .orElseThrow(() -> new RuntimeException("Failed to add tag!"));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/tag/remove/{id}")
-    public ResponseEntity<Void> removeTag(@PathVariable String id, @RequestBody TagAddRequest request) {
+    public ResponseEntity<Void> removeTag(@PathVariable String id, @RequestBody DocumentTagRequest request) {
         request.validate();
         DocumentData documentData = documentDataService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Document", id));
@@ -161,8 +161,9 @@ public class DocumentController {
         request.validate();
         DocumentData documentData = documentDataService.getById(request.documentId())
                 .orElseThrow(() -> new DataNotFoundException("Document", request.documentId()));
-        documentDataService.getById(request.relatedDocumentId())
-                .orElseThrow(() -> new DataNotFoundException("Document", request.relatedDocumentId()));
+        if (documentDataService.doesNotExist(request.relatedDocumentId())) {
+            throw new DataNotFoundException("Document", request.relatedDocumentId());
+        }
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         metadataService.addRelatedDocument(documentData, request.relatedDocumentId(), user.getUsername())
                 .orElseThrow(() -> new RuntimeException("Failed to add related document!"));
@@ -182,8 +183,9 @@ public class DocumentController {
     @DeleteMapping("/admin/duplicate")
     public ResponseEntity<Void> deleteDuplicate(@RequestBody DocumentDuplicateRequest request) {
         request.validate();
-        documentDataService.getById(request.originalId())
-                .orElseThrow(() -> new DataNotFoundException("Document", request.originalId()));
+        if (documentDataService.doesNotExist(request.originalId())) {
+            throw new DataNotFoundException("Document", request.originalId());
+        }
         DocumentData duplicateData = documentDataService.getById(request.duplicateId())
                 .orElseThrow(() -> new DataNotFoundException("Document", request.duplicateId()));
 

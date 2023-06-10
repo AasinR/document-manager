@@ -1,7 +1,7 @@
 package com.example.document_manager.service;
 
 import com.example.document_manager.model.DocumentData;
-import com.example.document_manager.model.DocumentTag;
+import com.example.document_manager.model.Tag;
 import com.example.document_manager.repository.DocumentDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class DocumentDataService {
         return documentDataRepository.findById(id);
     }
 
-    public Optional<DocumentData> addTag(DocumentData documentData, DocumentTag tag) {
+    public Optional<DocumentData> addTag(DocumentData documentData, Tag tag) {
         boolean isPresent = documentData.getTagList().add(tag);
         if (isPresent) {
             return Optional.of(documentDataRepository.save(documentData));
@@ -40,5 +40,9 @@ public class DocumentDataService {
 
     public void delete(String id) {
         documentDataRepository.deleteById(id);
+    }
+
+    public boolean doesNotExist(String id) {
+        return !documentDataRepository.existsById(id);
     }
 }

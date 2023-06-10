@@ -22,7 +22,7 @@ public class DocumentData {
     @DBRef
     private Metadata metadata;
     @DBRef
-    private Set<DocumentTag> tagList;
+    private Set<Tag> tagList;
 
     public DocumentData(String fileId, byte[] fileHash, Metadata metadata) {
         this.fileId = fileId;

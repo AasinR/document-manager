@@ -45,4 +45,8 @@ public class UserService {
     public void delete(String username) {
         userRepository.deleteById(username);
     }
+
+    public boolean doesNotExist(String username) {
+        return !userRepository.existsById(username);
+    }
 }

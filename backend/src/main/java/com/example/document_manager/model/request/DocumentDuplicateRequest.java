@@ -6,7 +6,8 @@ public record DocumentDuplicateRequest(
         String originalId,
         String duplicateId,
         boolean migrateComments
-) {
+) implements RequestData {
+    @Override
     public void validate() {
         if (originalId == null || originalId.isBlank()) {
             throw new InvalidInputException(true, "originalId");

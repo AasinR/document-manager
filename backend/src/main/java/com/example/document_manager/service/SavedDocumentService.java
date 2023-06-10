@@ -2,7 +2,7 @@ package com.example.document_manager.service;
 
 import com.example.document_manager.model.DocumentData;
 import com.example.document_manager.model.Metadata;
-import com.example.document_manager.model.DocumentTag;
+import com.example.document_manager.model.Tag;
 import com.example.document_manager.model.SavedDocument;
 import com.example.document_manager.model.request.MetadataRequest;
 import com.example.document_manager.repository.DocumentDataRepository;
@@ -78,7 +78,7 @@ public class SavedDocumentService {
         return Optional.empty();
     }
 
-    public Optional<SavedDocument> addTag(SavedDocument savedDocument, DocumentTag tag) {
+    public Optional<SavedDocument> addTag(SavedDocument savedDocument, Tag tag) {
         boolean isPresent = savedDocument.getTagList().add(tag);
         if (isPresent) {
             return Optional.of(savedDocumentRepository.save(savedDocument));

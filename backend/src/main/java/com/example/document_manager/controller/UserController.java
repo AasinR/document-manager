@@ -2,7 +2,6 @@ package com.example.document_manager.controller;
 
 import com.example.document_manager.exception.DataExistsException;
 import com.example.document_manager.exception.DataNotFoundException;
-import com.example.document_manager.exception.InvalidInputException;
 import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.UserAddRequest;
 import com.example.document_manager.model.request.UserUpdateRequest;
@@ -51,9 +50,7 @@ public class UserController {
 
     @PostMapping("/admin/add")
     public ResponseEntity<UserResponse> add(@RequestBody UserAddRequest request) {
-        if (request.username() == null || request.username().isBlank()) {
-            throw new InvalidInputException(true, "username");
-        }
+        request.validate();
         User user = userService.add(request.username())
                 .orElseThrow(() -> new DataExistsException("User", request.username()));
         UserResponse response = new UserResponse(
@@ -66,23 +63,9 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Void> userUpdate(@RequestBody UserUpdateRequest request) {
+    public ResponseEntity<Void> update(@RequestBody UserUpdateRequest request) {
+        request.validate();
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return update(user, request);
-    }
-
-    @PutMapping("/admin/update/{username}")
-    public ResponseEntity<Void> adminUpdate(@PathVariable String username, @RequestBody UserUpdateRequest request) {
-        User user = userService.getByUsername(username)
-                .orElseThrow(() -> new DataNotFoundException("User", username));
-        return update(user, request);
-    }
-
-    private ResponseEntity<Void> update(User user, UserUpdateRequest request) {
-        // shownName and email can be null but cannot be empty string
-        if ((request.shownName() != null && request.shownName().isBlank()) || (request.email() != null && request.email().isBlank())) {
-            throw new InvalidInputException(false, "shownName", "email");
-        }
         user.setShownName(request.shownName());
         user.setEmail(request.email());
         userService.update(user)

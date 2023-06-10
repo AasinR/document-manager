@@ -18,7 +18,7 @@ public class SavedDocument {
     private String ownerId;
     private String documentId;
     @DBRef
-    private Set<DocumentTag> tagList;
+    private Set<Tag> tagList;
 
     public SavedDocument(String ownerId, String documentId) {
         this.ownerId = ownerId;
