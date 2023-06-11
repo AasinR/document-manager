@@ -86,7 +86,7 @@ public class TagController {
         Tag tag = tagService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Tag", id));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (isUnauthorizedAccess(tag, user.getUsername())) {
+        if (tag.getOwnerId() != null && isUnauthorizedAccess(tag, user.getUsername())) {
             throw new UnauthorizedException("User is unauthorized to delete this tag!");
         }
         tagService.delete(id);

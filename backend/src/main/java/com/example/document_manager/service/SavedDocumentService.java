@@ -1,14 +1,14 @@
 package com.example.document_manager.service;
 
-import com.example.document_manager.model.DocumentData;
-import com.example.document_manager.model.Metadata;
-import com.example.document_manager.model.Tag;
-import com.example.document_manager.model.SavedDocument;
+import com.example.document_manager.model.*;
+import com.example.document_manager.model.projection.SavedDocumentDocumentIdProjection;
 import com.example.document_manager.model.request.MetadataRequest;
+import com.example.document_manager.repository.DeletedDocumentRepository;
 import com.example.document_manager.repository.DocumentDataRepository;
 import com.example.document_manager.repository.MetadataRepository;
 import com.example.document_manager.repository.SavedDocumentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,6 +16,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class SavedDocumentService {
+    private final DeletedDocumentRepository deletedDocumentRepository;
     private final SavedDocumentRepository savedDocumentRepository;
     private final DocumentDataRepository documentDataRepository;
     private final MetadataRepository metadataRepository;
@@ -73,6 +74,7 @@ public class SavedDocumentService {
     public Optional<SavedDocument> save(String ownerId, String documentId) {
         SavedDocument savedDocument = new SavedDocument(ownerId, documentId);
         if (!savedDocumentRepository.existsByOwnerIdAndDocumentId(ownerId, documentId)) {
+            deletedDocumentRepository.deleteByDocumentId(documentId);
             return Optional.of(savedDocumentRepository.insert(savedDocument));
         }
         return Optional.empty();
@@ -93,8 +95,35 @@ public class SavedDocumentService {
         }
     }
 
-    public void delete(String id) {
-        savedDocumentRepository.deleteById(id);
+    public void delete(SavedDocument savedDocument) {
+        savedDocumentRepository.deleteById(savedDocument.getId());
+        if (!savedDocumentRepository.existsByDocumentId(savedDocument.getDocumentId())) {
+            try {
+                deletedDocumentRepository.insert(new DeletedDocument(savedDocument.getDocumentId()));
+            }
+            catch (DuplicateKeyException e) {
+                // ignore
+            }
+        }
+    }
+
+    public void deleteAllByOwner(String ownerId) {
+        List<String> savedDocumentIdList = savedDocumentRepository.findAllDocumentIdByOwnerId(ownerId)
+                .stream()
+                .map(SavedDocumentDocumentIdProjection::documentId)
+                .toList();
+        savedDocumentRepository.deleteAllByOwnerId(ownerId);
+        List<String> filterDocumentIdList = savedDocumentRepository.findAllDocumentIdByDocumentIdIn(savedDocumentIdList)
+                .stream()
+                .map(SavedDocumentDocumentIdProjection::documentId)
+                .toList();
+        List<DeletedDocument> deletedDocumentList = savedDocumentIdList.stream()
+                .filter(value -> !filterDocumentIdList.contains(value))
+                .map(DeletedDocument::new)
+                .toList();
+        if (!deletedDocumentList.isEmpty()) {
+            deletedDocumentRepository.insert(deletedDocumentList);
+        }
     }
 
     public void migrate(String oldDocumentId, String newDocumentId) {

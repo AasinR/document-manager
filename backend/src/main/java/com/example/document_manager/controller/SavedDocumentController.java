@@ -129,13 +129,15 @@ public class SavedDocumentController {
         if (isUnauthorizedAccess(savedDocument, user.getUsername())) {
             throw new UnauthorizedException("User is unauthorized to delete this save!");
         }
-        savedDocumentService.delete(id);
+        savedDocumentService.delete(savedDocument);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/admin/delete/{id}")
     public ResponseEntity<Void> adminDelete(@PathVariable String id) {
-        savedDocumentService.delete(id);
+        SavedDocument savedDocument = savedDocumentService.getById(id)
+                .orElseThrow(() -> new DataNotFoundException("SavedDocument", id));
+        savedDocumentService.delete(savedDocument);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

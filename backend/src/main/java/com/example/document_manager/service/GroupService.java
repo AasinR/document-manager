@@ -5,7 +5,7 @@ import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.Group;
 import com.example.document_manager.model.GroupMember;
 import com.example.document_manager.model.User;
-import com.example.document_manager.repository.GroupRepository;
+import com.example.document_manager.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +16,10 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class GroupService {
+    private final SavedDocumentService savedDocumentService;
+    private final CommentRepository commentRepository;
     private final GroupRepository groupRepository;
+    private final TagRepository tagRepository;
 
     public List<Group> getAll() {
         return groupRepository.findAll();
@@ -114,6 +117,9 @@ public class GroupService {
     }
 
     public void delete(String id) {
+        commentRepository.deleteAllByOwnerId(id);
+        tagRepository.deleteAllByOwnerId(id);
+        savedDocumentService.deleteAllByOwner(id);
         groupRepository.deleteById(id);
     }
 
@@ -161,5 +167,9 @@ public class GroupService {
             }
         }
         return true;
+    }
+
+    public boolean isUserOwner(String username) {
+        return groupRepository.existsByGroupMemberListContaining(new GroupMember(username, GroupPermission.OWNER));
     }
 }

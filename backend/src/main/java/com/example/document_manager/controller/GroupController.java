@@ -173,6 +173,9 @@ public class GroupController {
         if (groupService.isUnauthorized(group, user.getUsername(), GroupPermission.OWNER)) {
             throw new UnauthorizedException("User is not authorized to delete this group!");
         }
+        if (group.getGroupMemberList().size() > 1) {
+            throw new UnauthorizedException("Group must be empty before deletion!");
+        }
         groupService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -2,10 +2,12 @@ package com.example.document_manager.controller;
 
 import com.example.document_manager.exception.DataExistsException;
 import com.example.document_manager.exception.DataNotFoundException;
+import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.UserAddRequest;
 import com.example.document_manager.model.request.UserUpdateRequest;
 import com.example.document_manager.model.response.UserResponse;
+import com.example.document_manager.service.GroupService;
 import com.example.document_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping("api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
+    private final GroupService groupService;
     private final UserService userService;
 
     @GetMapping("/all")
@@ -85,12 +88,20 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<Void> delete() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (groupService.isUserOwner(user.getUsername())) {
+            throw new UnauthorizedException("User cannot be deleted while being an owner of a group!");
+        }
         userService.delete(user.getUsername());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/admin/delete/{username}")
     public ResponseEntity<Void> adminDelete(@PathVariable String username) {
+        User user = userService.getByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("User", username));
+        if (groupService.isUserOwner(user.getUsername())) {
+            throw new UnauthorizedException("User cannot be deleted while being an owner of a group!");
+        }
         userService.delete(username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

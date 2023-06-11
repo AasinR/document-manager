@@ -1,17 +1,24 @@
 package com.example.document_manager.service;
 
+import com.example.document_manager.model.DocumentData;
+import com.example.document_manager.model.SavedDocument;
 import com.example.document_manager.model.Tag;
+import com.example.document_manager.repository.DocumentDataRepository;
+import com.example.document_manager.repository.SavedDocumentRepository;
 import com.example.document_manager.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TagService {
+    private final SavedDocumentRepository savedDocumentRepository;
+    private final DocumentDataRepository documentDataRepository;
     private final TagRepository tagRepository;
 
     public List<Tag> getAllByOwner(String ownerId) {
@@ -43,6 +50,12 @@ public class TagService {
     }
 
     public void delete(String id) {
+        List<SavedDocument> savedDocumentList = savedDocumentRepository.findAllByTagListId(id);
+        List<DocumentData> documentDataList = documentDataRepository.findAllByTagListId(id);
+        savedDocumentList.forEach(document -> document.getTagList().removeIf(tag -> Objects.equals(tag.getId(), id)));
+        documentDataList.forEach(document -> document.getTagList().removeIf(tag -> Objects.equals(tag.getId(), id)));
+        savedDocumentRepository.saveAll(savedDocumentList);
+        documentDataRepository.saveAll(documentDataList);
         tagRepository.deleteById(id);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.document_manager.repository;
 
 import com.example.document_manager.model.Group;
+import com.example.document_manager.model.GroupMember;
 import com.example.document_manager.model.projection.GroupIdProjection;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ public interface GroupRepository extends MongoRepository<Group, String> {
     List<GroupIdProjection> findAllIdByGroupMemberListUsername(String username);
 
     boolean existsByIdAndGroupMemberListUsername(String id, String username);
+
+    boolean existsByGroupMemberListContaining(GroupMember member);
 }

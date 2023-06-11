@@ -10,5 +10,7 @@ import java.util.List;
 public interface TagRepository extends MongoRepository<Tag, String> {
     List<Tag> findAllByOwnerId(String ownerId);
 
+    void deleteAllByOwnerId(String ownerId);
+
     boolean existsByOwnerIdAndName(String ownerId, String name);
 }
