@@ -28,9 +28,9 @@ import java.util.Optional;
 public class SavedDocumentController {
     private final SavedDocumentService savedDocumentService;
     private final DocumentDataService documentDataService;
-    private final TagService tagService;
     private final GroupService groupService;
     private final FileService fileService;
+    private final TagService tagService;
 
     @GetMapping("/all")
     public ResponseEntity<List<SavedDocument>> getAllByOwner(@RequestParam(required = false) String groupId) {

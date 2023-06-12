@@ -7,9 +7,12 @@ import com.example.document_manager.model.Comment;
 import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.CommentAddRequest;
 import com.example.document_manager.model.request.CommentUpdateRequest;
+import com.example.document_manager.model.response.CommentResponse;
+import com.example.document_manager.model.response.UserData;
 import com.example.document_manager.service.CommentService;
 import com.example.document_manager.service.DocumentDataService;
 import com.example.document_manager.service.GroupService;
+import com.example.document_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/comments")
@@ -26,34 +32,76 @@ public class CommentController {
     private final DocumentDataService documentDataService;
     private final CommentService commentService;
     private final GroupService groupService;
+    private final UserService userService;
 
     @GetMapping("/all/public/{documentId}")
-    public ResponseEntity<List<Comment>> getAllPublicByDocumentId(@PathVariable String documentId) {
+    public ResponseEntity<List<CommentResponse>> getAllPublicByDocumentId(@PathVariable String documentId) {
         List<Comment> commentList = commentService.getAllByOwnerId(documentId, null);
-        return new ResponseEntity<>(commentList, HttpStatus.OK);
+        List<CommentResponse> response = getCommentResponseList(commentList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/all/private/{documentId}")
-    public ResponseEntity<List<Comment>> getAllByOwner(@PathVariable String documentId, @RequestParam(required = false) String groupId) {
+    public ResponseEntity<List<CommentResponse>> getAllByOwner(@PathVariable String documentId, @RequestParam(required = false) String groupId) {
         String ownerId = groupService.resolveOwnerId(groupId);
         List<Comment> commentList = commentService.getAllByOwnerId(documentId, ownerId);
-        return new ResponseEntity<>(commentList, HttpStatus.OK);
+        List<CommentResponse> response = getCommentResponseList(commentList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/admin/all/private/{documentId}")
-    public ResponseEntity<List<Comment>> adminGetAllByOwner(@PathVariable String documentId, @RequestParam String ownerId) {
+    public ResponseEntity<List<CommentResponse>> adminGetAllByOwner(@PathVariable String documentId, @RequestParam String ownerId) {
         if (ownerId == null || ownerId.isBlank()) {
             throw new InvalidInputException(true, "ownerId");
         }
         List<Comment> commentList = commentService.getAllByOwnerId(documentId, ownerId);
-        return new ResponseEntity<>(commentList, HttpStatus.OK);
+        List<CommentResponse> response = getCommentResponseList(commentList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<CommentResponse> getCommentResponseList(List<Comment> commentList) {
+        Map<String, User> userMap = getUserMap(commentList);
+        return commentList.stream()
+                .map(comment -> {
+                    User user = userMap.get(comment.getUsername());
+                    if (user == null) {
+                        user = new User();
+                    }
+                    return new CommentResponse(
+                            comment.getId(),
+                            comment.getOwnerId(),
+                            comment.getDocumentId(),
+                            new UserData(user.getUsername(), user.getShownName()),
+                            comment.getContent(),
+                            comment.getTimestamp()
+                    );
+                })
+                .toList();
+    }
+
+    private Map<String, User> getUserMap(List<Comment> commentList) {
+        List<String> usernames = commentList.stream()
+                .map(Comment::getUsername)
+                .distinct()
+                .toList();
+        List<User> userList = userService.getAll(usernames);
+        return userList.stream().collect(Collectors.toMap(User::getUsername, Function.identity()));
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Comment> getById(@PathVariable String id) {
+    public ResponseEntity<CommentResponse> getById(@PathVariable String id) {
         Comment comment = commentService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Comment", id));
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        User user = userService.getByUsername(comment.getUsername()).orElse(new User());
+        CommentResponse response = new CommentResponse(
+                comment.getId(),
+                comment.getOwnerId(),
+                comment.getDocumentId(),
+                new UserData(user.getUsername(), user.getShownName()),
+                comment.getContent(),
+                comment.getTimestamp()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/add/public")

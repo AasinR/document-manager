@@ -5,10 +5,13 @@ import com.example.document_manager.exception.DataExistsException;
 import com.example.document_manager.exception.DataNotFoundException;
 import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.Group;
+import com.example.document_manager.model.GroupMember;
 import com.example.document_manager.model.User;
 import com.example.document_manager.model.request.GroupAddRequest;
 import com.example.document_manager.model.request.GroupMemberRequest;
 import com.example.document_manager.model.request.GroupUpdateRequest;
+import com.example.document_manager.model.response.GroupMemberResponse;
+import com.example.document_manager.model.response.GroupResponse;
 import com.example.document_manager.service.GroupService;
 import com.example.document_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/groups")
@@ -27,25 +32,85 @@ public class GroupController {
     private final UserService userService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<Group>> getAll() {
+    public ResponseEntity<List<GroupResponse>> getAll() {
         List<Group> groupList = groupService.getAll();
-        return new ResponseEntity<>(groupList, HttpStatus.OK);
+        List<GroupResponse> response = getGroupResponseList(groupList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/all/{username}")
-    public ResponseEntity<List<Group>> getAllByUsername(@PathVariable String username) {
+    public ResponseEntity<List<GroupResponse>> getAllByUsername(@PathVariable String username) {
         if (userService.doesNotExist(username)) {
             throw new DataNotFoundException("User", username);
         }
         List<Group> groupList = groupService.getAllByUsername(username);
-        return new ResponseEntity<>(groupList, HttpStatus.OK);
+        List<GroupResponse> response = getGroupResponseList(groupList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<GroupResponse> getGroupResponseList(List<Group> groupList) {
+        Map<String, User> userMap = getUserMap(groupList);
+        return groupList.stream()
+                .map(group -> new GroupResponse(
+                        group.getId(),
+                        group.getName(),
+                        fetchMemberList(group, userMap)
+                ))
+                .toList();
+    }
+
+    private Map<String, User> getUserMap(List<Group> groupList) {
+        List<String> usernames = groupList.stream()
+                .flatMap(group -> group.getGroupMemberList().stream())
+                .map(GroupMember::getUsername)
+                .distinct()
+                .toList();
+        List<User> userList = userService.getAll(usernames);
+        return userList.stream().collect(Collectors.toMap(User::getUsername, Function.identity()));
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Group> getById(@PathVariable String id) {
+    public ResponseEntity<GroupResponse> getById(@PathVariable String id) {
         Group group = groupService.getById(id)
                 .orElseThrow(() -> new DataNotFoundException("Group", id));
-        return new ResponseEntity<>(group, HttpStatus.OK);
+        List<GroupMemberResponse> groupMemberList = fetchMemberList(group);
+        GroupResponse response = new GroupResponse(
+                group.getId(),
+                group.getName(),
+                groupMemberList
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/member/get/{id}")
+    public ResponseEntity<List<GroupMemberResponse>> getMembers(@PathVariable String id) {
+        Group group = groupService.getById(id)
+                .orElseThrow(() -> new DataNotFoundException("Group", id));
+        List<GroupMemberResponse> response = fetchMemberList(group);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<GroupMemberResponse> fetchMemberList(Group group, Map<String, User> userMap) {
+        return group.getGroupMemberList().stream()
+                .map(member -> {
+                    User user = userMap.get(member.getUsername());
+                    return new GroupMemberResponse(
+                            member.getUsername(),
+                            user.getShownName(),
+                            member.getPermission()
+                    );
+                })
+                .toList();
+    }
+
+    private List<GroupMemberResponse> fetchMemberList(Group group) {
+        List<String> usernames = group.getGroupMemberList().stream()
+                .map(GroupMember::getUsername)
+                .toList();
+        List<User> userList = userService.getAll(usernames);
+        Map<String, User> userMap = userList.stream()
+                .collect(Collectors.toMap(User::getUsername, Function.identity()));
+        return fetchMemberList(group, userMap);
     }
 
     @PostMapping("/add")

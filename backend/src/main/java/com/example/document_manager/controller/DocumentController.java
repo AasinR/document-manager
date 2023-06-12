@@ -3,13 +3,8 @@ package com.example.document_manager.controller;
 import com.example.document_manager.exception.DataNotFoundException;
 import com.example.document_manager.exception.UnauthorizedException;
 import com.example.document_manager.model.*;
-import com.example.document_manager.model.request.DocumentDuplicateRequest;
-import com.example.document_manager.model.request.MetadataRequest;
-import com.example.document_manager.model.request.RelatedDocumentRequest;
-import com.example.document_manager.model.request.DocumentTagRequest;
-import com.example.document_manager.model.response.DocumentResponse;
-import com.example.document_manager.model.response.DocumentTagCollection;
-import com.example.document_manager.model.response.GroupTagCollection;
+import com.example.document_manager.model.request.*;
+import com.example.document_manager.model.response.*;
 import com.example.document_manager.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,22 +23,34 @@ public class DocumentController {
     private final DeletedDocumentService deletedDocumentService;
     private final SavedDocumentService savedDocumentService;
     private final DocumentDataService documentDataService;
-    private final TagService tagService;
     private final MetadataService metadataService;
     private final CommentService commentService;
     private final GroupService groupService;
     private final FileService fileService;
+    private final UserService userService;
+    private final TagService tagService;
 
     @GetMapping("/all")
     public ResponseEntity<List<DocumentResponse>> getAll() {
         List<DocumentData> documentDataList = documentDataService.getAll();
+        List<DocumentResponse> response = getDocumentResponseList(documentDataList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/records")
+    public ResponseEntity<List<DocumentResponse>> getAllInList(@RequestBody DocumentListFetchRequest request) {
+        request.validate();
+        List<DocumentData> documentDataList = documentDataService.getAll(request.documentIdList());
+        List<DocumentResponse> response = getDocumentResponseList(documentDataList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<DocumentResponse> getDocumentResponseList(List<DocumentData> documentDataList) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> groupIdList = groupService.getGroupIdsByUsername(user.getUsername());
-
         List<SavedDocument> privateSavedDocumentList = savedDocumentService.getAllByOwner(user.getUsername());
         List<SavedDocument> groupSavedDocumentList = savedDocumentService.getAllByOwnerIdList(groupIdList);
-
-        List<DocumentResponse> response = documentDataList.stream()
+        return documentDataList.stream()
                 .map(document -> {
                     DocumentTagCollection documentTagCollection = new DocumentTagCollection(
                             document.getTagList(),
@@ -56,8 +64,7 @@ public class DocumentController {
                             documentTagCollection
                     );
                 })
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                .toList();
     }
 
     @GetMapping("/get/{id}")
@@ -109,16 +116,65 @@ public class DocumentController {
     }
 
     @GetMapping("/metadata/all/{id}")
-    public ResponseEntity<List<Metadata>> getAllMetadataByDocumentId(@PathVariable String id) {
+    public ResponseEntity<List<MetadataResponse>> getAllMetadataByDocumentId(@PathVariable String id) {
         List<Metadata> metadataList = metadataService.getAllByDocumentId(id);
-        return new ResponseEntity<>(metadataList, HttpStatus.OK);
+        List<MetadataResponse> response = getMetadataResponseList(metadataList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private List<MetadataResponse> getMetadataResponseList(List<Metadata> metadataList) {
+        Map<String, User> userMap = getUserMap(metadataList);
+        return metadataList.stream()
+                .map(metadata -> {
+                    User user = userMap.get(metadata.getUsername());
+                    if (user == null) {
+                        user = new User();
+                    }
+                    return new MetadataResponse(
+                            metadata.getId(),
+                            new UserData(user.getUsername(), user.getShownName()),
+                            metadata.getDocumentId(),
+                            metadata.getTimestamp(),
+                            metadata.getRelatedDocumentList(),
+                            metadata.getTitle(),
+                            metadata.getAuthorList(),
+                            metadata.getDescription(),
+                            metadata.getPublicationDate(),
+                            metadata.getIdentifierList(),
+                            metadata.getOtherData()
+                    );
+                })
+                .toList();
+    }
+
+    private Map<String, User> getUserMap(List<Metadata> metadataList) {
+        List<String> usernames = metadataList.stream()
+                .map(Metadata::getUsername)
+                .distinct()
+                .toList();
+        List<User> userList = userService.getAll(usernames);
+        return userList.stream().collect(Collectors.toMap(User::getUsername, Function.identity()));
     }
 
     @GetMapping("/metadata/get/{metadataId}")
-    public ResponseEntity<Metadata> getMetadataById(@PathVariable String metadataId) {
+    public ResponseEntity<MetadataResponse> getMetadataById(@PathVariable String metadataId) {
         Metadata metadata = metadataService.getById(metadataId)
                 .orElseThrow(() -> new DataNotFoundException("Metadata", metadataId));
-        return new ResponseEntity<>(metadata, HttpStatus.OK);
+        User user = userService.getByUsername(metadata.getUsername()).orElse(new User());
+        MetadataResponse response = new MetadataResponse(
+                metadata.getId(),
+                new UserData(user.getUsername(), user.getShownName()),
+                metadata.getDocumentId(),
+                metadata.getTimestamp(),
+                metadata.getRelatedDocumentList(),
+                metadata.getTitle(),
+                metadata.getAuthorList(),
+                metadata.getDescription(),
+                metadata.getPublicationDate(),
+                metadata.getIdentifierList(),
+                metadata.getOtherData()
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/update/{id}")

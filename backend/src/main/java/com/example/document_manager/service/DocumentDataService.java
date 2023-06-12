@@ -23,6 +23,10 @@ public class DocumentDataService {
         return documentDataRepository.findById(id);
     }
 
+    public List<DocumentData> getAll(List<String> idList) {
+        return documentDataRepository.findAllById(idList);
+    }
+
     public Optional<DocumentData> addTag(DocumentData documentData, Tag tag) {
         boolean isPresent = documentData.getTagList().add(tag);
         if (isPresent) {
