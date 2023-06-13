@@ -1,0 +1,15 @@
+spring.data.mongodb.uri=
+spring.data.mongodb.database=document-manager
+
+spring.ldap.urls=
+spring.ldap.username=
+spring.ldap.password=
+spring.ldap.base=
+
+spring.servlet.multipart.max-file-size=100MB
+spring.servlet.multipart.max-request-size=100MB
+
+document.deletion.time=30
+document.deletion.schedule=0 0 4 * * ?
+
+jwt.secret.key=
