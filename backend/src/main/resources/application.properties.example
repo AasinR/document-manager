@@ -1,15 +1,23 @@
+# MongoDB properties
 spring.data.mongodb.uri=
-spring.data.mongodb.database=document-manager
+spring.data.mongodb.database=
 
+# LDAP properties
 spring.ldap.urls=
 spring.ldap.username=
 spring.ldap.password=
 spring.ldap.base=
 
-spring.servlet.multipart.max-file-size=100MB
-spring.servlet.multipart.max-request-size=100MB
+# Allowed max API request and file size
+spring.servlet.multipart.max-file-size=
+spring.servlet.multipart.max-request-size=
 
-document.deletion.time=30
-document.deletion.schedule=0 0 4 * * ?
+# Document deletion schedule properties
+document.deletion.time=
+document.deletion.schedule=
 
+# JWT token secret
 jwt.secret.key=
+
+# Allowed CORS Origins
+cors.origins=

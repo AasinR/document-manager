@@ -36,6 +36,9 @@ document.deletion.schedule=
 
 # JWT token secret
 jwt.secret.key=
+
+# Allowed CORS Origins
+cors.origins=
 ```
 
 ### **Document deletion schedule properties**
@@ -51,3 +54,6 @@ jwt.secret.key=
 `day of the week (0 - 7) (or MON-SUN -- 0 or 7 is Sunday)`
 
 **example:** `0 0 4 * * ?` means it will run every day at `04:00`
+
+### **CORS Origins property**
+- `cors.origins`: list of urls, separated by `;`
