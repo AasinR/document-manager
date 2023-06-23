@@ -1,0 +1,35 @@
+#error-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#error-page > div {
+    width: 50%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+#error-page img {
+    height: 100%;
+}
+
+#error-page > div > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+    padding: 2rem;
+    text-align: center;
+    color: #f87575;
+}
+
+#error-page h1 {
+    font-size: 6rem;
+}
+
+#error-page h2 {
+    font-size: 1.5rem;
+}
