@@ -9,7 +9,7 @@ function SpinnerButton({
     spinnerColor,
     spinnerSize,
     speedMultiplier,
-}: SpinnerButtonType) {
+}: SpinnerButtonParams) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleOnClick = (

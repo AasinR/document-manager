@@ -1,5 +1,9 @@
+:root {
+    --nav-height: 40px;
+}
+
 .navbar {
-    height: 40px;
+    height: var(--nav-height);
     padding: 0 1rem;
     display: flex;
     align-items: center;
@@ -8,4 +12,8 @@
 
     background-color: #202020;
     border-bottom: 1px solid #808080;
+}
+
+.nav-outlet {
+    height: calc(100% - var(--nav-height));
 }

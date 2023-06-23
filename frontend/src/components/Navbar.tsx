@@ -7,14 +7,10 @@ interface NavItem {
 }
 
 function Navbar() {
-    const navItems: NavItem[] = [
-        { name: "Home", path: "/" },
-        { name: "Page 1", path: "page1" },
-        { name: "Page 2", path: "page2" },
-    ];
+    const navItems: NavItem[] = [{ name: "Home", path: "/" }];
 
     return (
-        <div>
+        <div className="page">
             <header>
                 <nav className="navbar">
                     {navItems.map((value, index) => (
@@ -24,7 +20,7 @@ function Navbar() {
                     ))}
                 </nav>
             </header>
-            <main>
+            <main className="nav-outlet">
                 <Outlet />
             </main>
         </div>

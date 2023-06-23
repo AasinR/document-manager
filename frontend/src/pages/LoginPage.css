@@ -1,0 +1,82 @@
+.login-panel {
+    width: 400px;
+    position: absolute;
+    top: calc(50% - 200px);
+    left: calc(50% - 200px);
+
+    overflow: hidden;
+
+    background-color: #00000090;
+    border: 1px solid #808080;
+    border-radius: 20px;
+}
+
+.login-panel h1 {
+    text-align: center;
+    padding: 10px;
+    background-color: #00000060;
+    border-bottom: 1px solid #808080;
+}
+
+.login-panel form {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    gap: 1rem;
+}
+
+.login-panel form input {
+    height: 2.5rem;
+    padding: 0 1em;
+    overflow: hidden;
+
+    outline: none;
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #008b8b;
+    border-radius: 10px;
+}
+
+#password-input {
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+#password-input input {
+    flex: 1;
+    border-radius: 10px 0 0 10px;
+    border-right: none;
+}
+
+#password-input button {
+    width: 40px;
+    outline: none;
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #008b8b;
+    border-radius: 0 10px 10px 0;
+}
+
+#password-input button img {
+    width: 75%;
+    height: 75%;
+    filter: invert(40%);
+}
+
+#login-button {
+    height: 2.5rem;
+    width: 40%;
+    margin: auto;
+    outline: none;
+
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #008b8b;
+    border-radius: 10px;
+}
+
+.password-error {
+    color: #8b0000;
+    text-align: center;
+}
