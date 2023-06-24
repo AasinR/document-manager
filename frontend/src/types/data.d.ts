@@ -22,6 +22,11 @@ declare global {
         error?: string;
         code?: number;
     }
+
+    interface NavItem {
+        name: string;
+        path: string;
+    }
 }
 
 export {};

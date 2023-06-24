@@ -2,16 +2,117 @@
     --nav-height: 40px;
 }
 
-.navbar {
+#navbar {
     height: var(--nav-height);
-    padding: 0 1rem;
     display: flex;
-    align-items: center;
+    flex-direction: row;
     overflow: hidden;
-    gap: 1rem;
 
     background-color: #202020;
     border-bottom: 1px solid #808080;
+
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+#nav-left {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+
+.nav-item {
+    padding: 0 0.5rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.nav-item:hover {
+    background-color: #303030;
+}
+
+#nav-right {
+    display: flex;
+    flex-direction: row-reverse;
+    flex: 1;
+}
+
+#nav-user {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1rem;
+
+    color: #ffffff;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+#nav-user:hover > #nav-menu-icon {
+    background-color: #303030;
+}
+
+#nav-user > div {
+    padding: 0 0.5rem;
+}
+
+#nav-user-shown {
+    font-size: 0.8rem;
+}
+
+#nav-username {
+    font-size: 0.7rem;
+}
+
+#nav-menu-icon {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+#nav-menu-icon > img {
+    height: 80%;
+    filter: invert(100%);
+}
+
+#nav-dropdown {
+    position: absolute;
+    right: 0;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    background-color: #00000050;
+    border: 1px solid #808080;
+    border-top: none;
+    border-right: none;
+    border-radius: 0 0 0 10px;
+}
+
+.nav-dropdown-item {
+    padding: 0.5rem;
+    color: #ffffff;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+button.nav-dropdown-item {
+    background-color: transparent;
+    text-align: left;
+    border: none;
+}
+
+.nav-dropdown-item:hover {
+    background-color: #00000080;
 }
 
 .nav-outlet {
