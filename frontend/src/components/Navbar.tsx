@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import menuImage from "../assets/icons/hamburger.png";
+import { useAuth } from "../hooks";
 import "./Navbar.css";
 
 function Navbar() {
+    const { auth } = useAuth();
     const navigate = useNavigate();
 
-    const [user, setUser] = useState<User | null>(null);
     const [isDropdown, setIsDropdown] = useState<boolean>(false);
 
     const navList: NavItem[] = [{ name: "Home", path: "/" }];
     const dropdownItemList: NavItem[] = [{ name: "Test", path: "/test" }];
-
-    useEffect(() => {
-        const userString: string | null = sessionStorage.getItem("user");
-        setUser(JSON.parse(userString!));
-    }, []);
 
     const handleDropdown = (event: React.FocusEvent<HTMLButtonElement>) => {
         if (!event.relatedTarget?.classList.contains("nav-dropdown-item")) {
@@ -28,7 +24,6 @@ function Navbar() {
     ) => {
         event.preventDefault();
         sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
         navigate("/login");
     };
 
@@ -54,8 +49,8 @@ function Navbar() {
                             onBlur={handleDropdown}
                         >
                             <div>
-                                <p id="nav-user-shown">{user?.shownName}</p>
-                                <p id="nav-username">@{user?.username}</p>
+                                <p id="nav-user-shown">{auth?.shownName}</p>
+                                <p id="nav-username">@{auth?.username}</p>
                             </div>
                             <div id="nav-menu-icon">
                                 <img src={menuImage} alt="menu" />

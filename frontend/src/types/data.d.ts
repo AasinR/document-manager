@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { LengthType } from "react-spinners/helpers/props";
 
 declare global {
@@ -26,6 +26,11 @@ declare global {
     interface NavItem {
         name: string;
         path: string;
+    }
+
+    interface UseAuthType {
+        auth: User | null;
+        setAuth: React.Dispatch<React.SetStateAction<User | null>>;
     }
 }
 

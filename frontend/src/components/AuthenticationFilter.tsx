@@ -1,43 +1,17 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import jwtDecode from "jwt-decode";
-import { LoadingPage, ErrorPage } from "../pages";
-import { UserPermission } from "../utils/data";
+import { LoadingPage } from "../pages";
+import { useAuth, useAuthenticate } from "../hooks";
 
-function AuthenticationFilter({ allowed }: { allowed: UserPermission[] }) {
+function AuthenticationFilter() {
+    const { auth } = useAuth();
+    const { storeUser } = useAuthenticate();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
-
-    useEffect(() => {
-        const redirect = (): void => {
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
-            navigate("/login", { state: { from: location }, replace: true });
-        };
-
-        const token: string | null = sessionStorage.getItem("token");
-        if (!isValidToken(token)) {
-            redirect();
-            return;
-        }
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-        (async () => {
-            const { isStored, user } = await storeUserData(token!);
-            if (!isStored) {
-                redirect();
-                return;
-            }
-            if (user !== null && allowed.includes(user.permission)) {
-                setIsAuthorized(true);
-            }
-            setIsLoading(false);
-        })();
-    }, [allowed, location, navigate]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const isValidToken = (token: string | null): boolean => {
         if (token === null) {
@@ -47,36 +21,30 @@ function AuthenticationFilter({ allowed }: { allowed: UserPermission[] }) {
         return new Date() < new Date(jwtData.exp * 1000);
     };
 
-    const storeUserData = async (
-        token: string
-    ): Promise<{ isStored: boolean; user: User | null }> => {
-        const jwtData: JwtData = jwtDecode(token);
-        let isStored: boolean = false;
-        let user: User | null = null;
-        await axios
-            .get(`${process.env.REACT_APP_API_URL}/users/get/${jwtData.sub}`)
-            .then((response: AxiosResponse<User, any>) => {
-                user = response.data;
-                sessionStorage.setItem("user", JSON.stringify(user));
-                isStored = true;
-            })
-            .catch((_) => {
-                isStored = false;
-            });
-        return { isStored, user };
-    };
+    useEffect(() => {
+        const token: string | null = sessionStorage.getItem("token");
+        if (!isValidToken(token)) {
+            console.log("no token")
+            sessionStorage.removeItem("token");
+            navigate("/login", { state: { from: location }, replace: true });
+            return;
+        }
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    return (
-        <>
-            {isLoading ? (
-                <LoadingPage />
-            ) : isAuthorized ? (
-                <Outlet />
-            ) : (
-                <ErrorPage error="Unauthorized Access!" code={401} />
-            )}
-        </>
-    );
+        (async () => {
+            if (auth == null && !(await storeUser(token!))) {
+                sessionStorage.removeItem("token");
+                navigate("/login", {
+                    state: { from: location },
+                    replace: true,
+                });
+                return;
+            }
+            setLoading(false);
+        })();
+    }, [auth, location, navigate, storeUser]);
+
+    return <>{loading ? <LoadingPage /> : <Outlet />}</>;
 }
 
 export default AuthenticationFilter;

@@ -1,31 +1,35 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuthenticate } from "../hooks";
 import { SpinnerButton } from "../components";
 import showPasswordImage from "../assets/icons/password-show.png";
 import hidePasswordImage from "../assets/icons/password-hide.png";
 import "./LoginPage.css";
 
 function LoginPage() {
-    const { authenticate, errorMessage } = useAuth();
+    const { authenticate, errorMessage } = useAuthenticate();
+
     const navigate = useNavigate();
-    const [isPasswordShown, setIsPasswordShown] = useState<boolean>(false);
+    const location = useLocation();
+    const from: string = location.state?.from?.pathname || "/";
+
+    const [passwordShown, setPasswordShown] = useState<boolean>(false);
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
-    const passwordIcon: string = isPasswordShown
+    const passwordIcon: string = passwordShown
         ? showPasswordImage
         : hidePasswordImage;
 
     const handlePasswordShow = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setIsPasswordShown(!isPasswordShown);
+        setPasswordShown(!passwordShown);
     };
 
     const handleLogin = async () => {
         const isAuthenticated = await authenticate(username, password);
         if (isAuthenticated) {
-            navigate("/");
+            navigate(from, { replace: true });
         }
     };
 
@@ -43,7 +47,7 @@ function LoginPage() {
                     />
                     <div id="password-input">
                         <input
-                            type={isPasswordShown ? "text" : "password"}
+                            type={passwordShown ? "text" : "password"}
                             placeholder="Password"
                             maxLength={32}
                             value={password}
@@ -54,7 +58,7 @@ function LoginPage() {
                         <button onClick={handlePasswordShow}>
                             <img
                                 src={passwordIcon}
-                                alt={isPasswordShown ? "show" : "hide"}
+                                alt={passwordShown ? "show" : "hide"}
                             />
                         </button>
                     </div>

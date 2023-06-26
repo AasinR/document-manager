@@ -1,43 +1,31 @@
 import React from "react";
-import {
-    createBrowserRouter,
-    createRoutesFromElements,
-    Route,
-    RouterProvider,
-} from "react-router-dom";
-import { AuthenticationFilter, Navbar } from "./components";
+import { Route, Routes } from "react-router-dom";
+import { AuthenticationFilter, Navbar, PermissionFilter } from "./components";
 import { ErrorPage, HomePage, LoginPage } from "./pages";
-import { UserPermission } from "./utils/data";
 import "./App.css";
 
 function App() {
-    const router = createBrowserRouter(
-        createRoutesFromElements(
+    return (
+        <Routes>
             <Route path="/">
                 {/* public */}
                 <Route path="login" element={<LoginPage />} />
 
                 {/* authenticated routes */}
-                <Route element={<Navbar />}>
-                    <Route
-                        element={
-                            <AuthenticationFilter
-                                allowed={[
-                                    UserPermission.USER,
-                                    UserPermission.ADMIN,
-                                ]}
-                            />
-                        }
-                    >
-                        <Route path="" element={<HomePage />} />
+                <Route element={<AuthenticationFilter />}>
+                    <Route element={<Navbar />}>
+                        {/* permission: all */}
+                        <Route element={<PermissionFilter />}>
+                            <Route path="" element={<HomePage />} />
+                        </Route>
                     </Route>
                 </Route>
+
+                {/* non existent routes */}
                 <Route path="*" element={<ErrorPage />} />
             </Route>
-        )
+        </Routes>
     );
-
-    return <RouterProvider router={router} />;
 }
 
 export default App;
