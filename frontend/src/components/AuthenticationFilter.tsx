@@ -24,7 +24,6 @@ function AuthenticationFilter() {
     useEffect(() => {
         const token: string | null = sessionStorage.getItem("token");
         if (!isValidToken(token)) {
-            console.log("no token")
             sessionStorage.removeItem("token");
             navigate("/login", { state: { from: location }, replace: true });
             return;
