@@ -5,6 +5,7 @@ function SpinnerButton({
     children,
     id,
     className,
+    type,
     onClick,
     spinnerColor,
     spinnerSize,
@@ -28,6 +29,7 @@ function SpinnerButton({
         <button
             id={id}
             className={className}
+            type={type}
             onClick={handleOnClick}
             disabled={isLoading}
         >

@@ -55,7 +55,7 @@ function LoginPage() {
                                 setPassword(event.target.value)
                             }
                         />
-                        <button onClick={handlePasswordShow}>
+                        <button onClick={handlePasswordShow} type="button">
                             <img
                                 src={passwordIcon}
                                 alt={passwordShown ? "show" : "hide"}
@@ -65,6 +65,7 @@ function LoginPage() {
                     <p className="password-error">{errorMessage}</p>
                     <SpinnerButton
                         id="login-button"
+                        type="submit"
                         onClick={handleLogin}
                         spinnerColor="#808080"
                         spinnerSize={20}

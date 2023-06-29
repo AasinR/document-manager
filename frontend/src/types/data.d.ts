@@ -12,6 +12,7 @@ declare global {
         children?: ReactNode;
         id?: string;
         className?: string;
+        type?: "button" | "submit" | "reset";
         onClick?: () => Promise<void>;
         spinnerColor?: string;
         spinnerSize?: LengthType;
