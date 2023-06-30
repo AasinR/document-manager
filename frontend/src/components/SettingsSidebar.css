@@ -1,0 +1,33 @@
+#setting-sidebar-layout {
+    display: flex;
+    flex-direction: row;
+}
+
+#settings-sidebar {
+    width: 200px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #202020;
+    border-right: 1px solid #808080;
+}
+
+.setting-sidebar-item {
+    padding: 0.5rem;
+    text-decoration: none;
+    color: #ffffff;
+    border-bottom: 1px solid #808080;
+}
+
+.setting-sidebar-item:hover {
+    background-color: #303030;
+}
+
+.setting-sidebar-item.active {
+    background-color: #303030;
+}
+
+#settings-outlet {
+    flex: 1;
+}

@@ -1,0 +1,78 @@
+#account-page {
+    padding: 1rem;
+}
+
+#account-page h1 {
+    margin-bottom: 2rem;
+}
+
+#account-page h2 {
+    margin-bottom: 1rem;
+}
+
+.account-settings-container {
+    padding: 1rem 0;
+    border-top: 1px solid #808080;
+}
+
+.account-settings-container > form {
+    max-width: 400px;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.account-settings-container > div {
+    padding: 0 1rem;
+}
+
+.account-page-data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.account-page-data > input {
+    padding-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #008b8b;
+}
+
+.account-page-data > input:disabled {
+    border-bottom: 1px solid #000000;
+}
+
+.account-settings-button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.account-settings-button {
+    min-width: 100px;
+    padding: 0.5rem 1rem;
+    color: #ffffff;
+    background-color: #202020;
+    border: 1px solid #808080;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.account-settings-delete-button {
+    min-width: 100px;
+    padding: 0.5rem 1rem;
+    color: #ffffff;
+    background-color: #202020;
+    border: 1px solid #808080;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#account-settings-error {
+    color: #b60808;
+    text-align: center;
+}

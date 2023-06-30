@@ -11,7 +11,7 @@ declare global {
     interface User {
         username: string;
         shownName: string;
-        email: string;
+        email: string | null;
         permission: UserPermission;
     }
 }

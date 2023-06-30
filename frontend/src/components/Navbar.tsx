@@ -11,7 +11,9 @@ function Navbar() {
     const [isDropdown, setIsDropdown] = useState<boolean>(false);
 
     const navList: NavItem[] = [{ name: "Home", path: "/" }];
-    const dropdownItemList: NavItem[] = [{ name: "Test", path: "/test" }];
+    const dropdownItemList: NavItem[] = [
+        { name: "Settings", path: "/settings" },
+    ];
 
     const handleDropdown = (event: React.FocusEvent<HTMLButtonElement>) => {
         if (!event.relatedTarget?.classList.contains("nav-dropdown-item")) {

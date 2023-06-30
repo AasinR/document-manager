@@ -1,7 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { AuthenticationFilter, Navbar, PermissionFilter } from "./components";
-import { ErrorPage, HomePage, LoginPage } from "./pages";
+import {
+    AuthenticationFilter,
+    Navbar,
+    PermissionFilter,
+    SettingsSidebar,
+} from "./components";
+import { ErrorPage, HomePage, LoginPage, AccountPage } from "./pages";
 import "./App.css";
 
 function App() {
@@ -17,6 +22,15 @@ function App() {
                         {/* permission: all */}
                         <Route element={<PermissionFilter />}>
                             <Route path="" element={<HomePage />} />
+                            <Route
+                                path="settings"
+                                element={<SettingsSidebar />}
+                            >
+                                <Route
+                                    path="account"
+                                    element={<AccountPage />}
+                                />
+                            </Route>
                         </Route>
                     </Route>
                 </Route>
