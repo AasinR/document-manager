@@ -27,6 +27,10 @@
     padding: 0 1rem;
 }
 
+.account-settings-container > div > ul {
+    padding: 0.5rem 1rem;
+}
+
 .account-page-data {
     display: flex;
     flex-direction: column;
@@ -62,17 +66,25 @@
     overflow: hidden;
 }
 
-.account-settings-delete-button {
-    min-width: 100px;
-    padding: 0.5rem 1rem;
-    color: #ffffff;
-    background-color: #202020;
-    border: 1px solid #808080;
-    border-radius: 10px;
-    overflow: hidden;
+.account-settings-button:hover {
+    background: #008b8b60;
 }
 
-#account-settings-error {
+.account-settings-button-red:hover {
+    background: #b6080880;
+}
+
+#account-settings-delete-button-container {
+    width: 400px;
+    margin-top: 1rem;
+}
+
+#account-settings-save-error {
     color: #b60808;
     text-align: center;
+}
+
+#account-settings-delete-error {
+    margin-top: 1rem;
+    color: #b60808;
 }

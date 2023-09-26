@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import menuImage from "../assets/icons/hamburger.png";
-import { useAuth } from "../hooks";
+import { useAuth, useLogout } from "../hooks";
 import "./Navbar.css";
 
 function Navbar() {
     const { auth } = useAuth();
-    const navigate = useNavigate();
+    const logout = useLogout();
 
     const [isDropdown, setIsDropdown] = useState<boolean>(false);
 
@@ -25,8 +25,7 @@ function Navbar() {
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         event.preventDefault();
-        sessionStorage.removeItem("token");
-        navigate("/login");
+        logout();
     };
 
     return (

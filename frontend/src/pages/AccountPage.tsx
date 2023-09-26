@@ -1,16 +1,20 @@
+import axios from "axios";
 import { useState } from "react";
-import { useAuth } from "../hooks";
+import { useAuth, useLogout } from "../hooks";
 import { SpinnerButton } from "../components";
 import "./AccountPage.css";
-import axios from "axios";
 
 function AccountPage() {
     const { auth, setAuth } = useAuth();
+    const logout = useLogout();
 
     const [editing, setEditing] = useState<boolean>(false);
     const [shownName, setShownName] = useState<string>(auth?.shownName || "");
     const [email, setEmail] = useState<string>(auth?.email || "");
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [saveErrorMessage, setSaveErrorMessage] = useState<string>("");
+
+    const [deleting, setDeleting] = useState<boolean>(false);
+    const [deleteErrorMessage, setDeleteErrorMessage] = useState<string>("");
 
     const handleEditing = () => {
         if (editing) {
@@ -50,7 +54,21 @@ function AccountPage() {
                     apiError?.statusCode && apiError.statusCode < 500
                         ? "Failed to update user data!"
                         : "Oops! Something went wrong on the server. Please try again later.";
-                setErrorMessage(message);
+                setSaveErrorMessage(message);
+            });
+    };
+
+    const handleDelete = async () => {
+        await axios
+            .delete(`${process.env.REACT_APP_API_URL}/users/delete`)
+            .then(() => logout())
+            .catch((error) => {
+                const apiError: ApiError | undefined = error.response?.data;
+                const message: string =
+                    apiError?.statusCode && apiError.statusCode < 500
+                        ? "Cannot delete account while being the owner of a group!"
+                        : "Oops! Something went wrong on the server. Please try again later.";
+                setDeleteErrorMessage(message);
             });
     };
 
@@ -86,10 +104,12 @@ function AccountPage() {
                         User permission:
                         <input value={auth?.permission} disabled />
                     </label>
-                    <p id="account-settings-error">{errorMessage}</p>
+                    <p id="account-settings-error">{saveErrorMessage}</p>
                     <div className="account-settings-button-container">
                         <button
-                            className="account-settings-button"
+                            className={`account-settings-button ${
+                                editing ? "account-settings-button-red" : null
+                            }`}
                             type="button"
                             onClick={handleEditing}
                         >
@@ -111,15 +131,51 @@ function AccountPage() {
                 </form>
             </div>
             <div className="account-settings-container">
-                <h2>Delete Account</h2>
                 <div>
-                    <p>TODO: account deletion with proper explanation</p>
-                    <button
-                        className="account-settings-delete-button"
-                        type="button"
+                    <h2>Delete Account</h2>
+                    <p>When you delete your account:</p>
+                    <ul>
+                        <li>
+                            All your private data associated with this account
+                            will be permanently removed.
+                        </li>
+                        <li>
+                            Publicly shared data will remain unaffected and
+                            continue to be visible.
+                        </li>
+                    </ul>
+                    <p>
+                        Please note that this action is irreversible, and you
+                        won't be able to recover your account or its data once
+                        deleted.
+                    </p>
+                    <p id="account-settings-delete-error">
+                        {deleteErrorMessage}
+                    </p>
+                    <div
+                        id="account-settings-delete-button-container"
+                        className="account-settings-button-container"
                     >
-                        Delete Account
-                    </button>
+                        <button
+                            className="account-settings-button account-settings-button-red"
+                            type="button"
+                            onClick={() => setDeleting(!deleting)}
+                        >
+                            {deleting ? "Cancel" : "Delete Account"}
+                        </button>
+                        {deleting ? (
+                            <SpinnerButton
+                                className="account-settings-button account-settings-button-red"
+                                type="submit"
+                                onClick={handleDelete}
+                                spinnerColor="#ffffff"
+                                spinnerSize={12}
+                                speedMultiplier={0.6}
+                            >
+                                Delete Account
+                            </SpinnerButton>
+                        ) : null}
+                    </div>
                 </div>
             </div>
         </div>
