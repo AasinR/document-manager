@@ -5,11 +5,13 @@ import "./SearchBar.css";
 function SearchBar({
     id,
     className,
+    defaultValue,
     onChange,
     onSearch,
 }: {
     id: string;
     className: string;
+    defaultValue: string;
     onChange: (searchValue: string) => void;
     onSearch: (searchValue: string) => void;
 }) {
@@ -21,6 +23,10 @@ function SearchBar({
         event.preventDefault();
         onSearch(searchValue);
     };
+
+    useEffect(() => {
+        setSearchValue(defaultValue);
+    }, [defaultValue]);
 
     useEffect(() => {
         onChange(searchValue);
@@ -63,6 +69,7 @@ function SearchBar({
 SearchBar.defaultProps = {
     id: "",
     className: "",
+    defaultValue: "",
     onChange: () => {},
     onSearch: () => {},
 };

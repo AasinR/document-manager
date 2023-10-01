@@ -6,7 +6,13 @@ import {
     PermissionFilter,
     SettingsSidebar,
 } from "./components";
-import { ErrorPage, HomePage, LoginPage, AccountPage } from "./pages";
+import {
+    ErrorPage,
+    HomePage,
+    LoginPage,
+    AccountPage,
+    SearchPage,
+} from "./pages";
 import "./App.css";
 
 function App() {
@@ -22,6 +28,7 @@ function App() {
                         {/* permission: all */}
                         <Route element={<PermissionFilter />}>
                             <Route path="" element={<HomePage />} />
+                            <Route path="search" element={<SearchPage />} />
                             <Route
                                 path="settings"
                                 element={<SettingsSidebar />}
