@@ -1,4 +1,4 @@
-import { UserPermission } from "../utils/data";
+import { GroupPermission, UserPermission } from "../utils/data";
 
 declare global {
     interface ApiError {
@@ -13,6 +13,18 @@ declare global {
         shownName: string;
         email: string | null;
         permission: UserPermission;
+    }
+
+    interface GroupMember {
+        username: string;
+        shownName: string;
+        permission: GroupPermission;
+    }
+
+    interface Group {
+        id: string;
+        name: string;
+        groupMemberList: GroupMember[]
     }
 
     interface Metadata {

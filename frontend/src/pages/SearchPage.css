@@ -1,35 +1,197 @@
 #search-page {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-.search-side-panel {
-    height: 100%;
-    width: 100%;
-    border: 1px solid blue;
-}
-
-#search-mid {
+#search-page-mid {
     height: 100%;
     min-width: 500px;
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 1rem;
 }
 
-#search-search-bar {
+#search-page-search-bar {
     width: 100%;
 }
 
-#search-container {
+#search-page-container {
     width: 100%;
     height: 100%;
-    margin-top: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    overflow: hidden;
+    overflow: auto;
+}
+
+#search-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+#search-page-filer-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.search-page-filter-header {
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #808080;
+}
+
+.search-page-filter-header > input {
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+.search-page-filter-header-options {
+    width: 100%;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-page-filter-header-options > button {
+    height: 35px;
+    padding: 0 0.5rem;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+.search-page-filter-header-options > button:hover {
+    color: #dddddd;
+}
+
+.search-page-filter-header-options > button.selected {
+    color: #ffffff;
+}
+
+#search-page-group-button {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+#search-page-group-button > img {
+    aspect-ratio: 1 / 1;
+    height: 40%;
+    filter: invert(40%);
+    -webkit-user-drag: none;
+}
+
+#search-page-group-button:hover > img {
+    filter: invert(80%);
+}
+
+#search-page-group-button.selected > img {
+    filter: invert(100%);
+}
+
+#search-page-group-select-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+
+#search-page-group-select {
+    position: relative;
+}
+
+#search-page-group-select > div {
+    position: absolute;
+    right: 0;
+    width: 140px;
+    background-color: #202020;
+    border: 1px solid #808080;
+    z-index: 4;
+}
+
+.search-page-filter-not-found {
+    padding: 0.5rem;
+    text-align: center;
+    color: #808080;
+}
+
+.search-page-filter-option-container {
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.search-page-filter-option-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    border-left: 1px solid #808080;
+}
+.search-page-filter-option-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.search-page-filter-option-container::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+.search-page-filter-option-container > button {
+    min-height: 35px;
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #808080;
+}
+.search-page-filter-option-container > button:last-child {
+    border: none;
+}
+
+.search-page-filter-option-container > button:hover {
+    color: #dddddd;
+}
+.search-page-filter-option-container > button.selected {
+    color: #ffffff;
+}
+
+.search-page-filter-option-container > button > p {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-page-filter-option-container > button > p:nth-child(1) {
+    width: 100%;
+    padding: 0 0.5rem;
+    justify-content: left;
+}
+
+.search-page-filter-option-container > button > p:nth-child(2) {
+    aspect-ratio: 1 / 1;
+    height: 70%;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#search-page-tag-filter-container {
+    width: 300px;
+    height: 300px;
 }
