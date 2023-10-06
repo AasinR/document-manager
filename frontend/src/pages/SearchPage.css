@@ -79,56 +79,18 @@
     color: #ffffff;
 }
 
-#search-page-group-button {
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-}
-
-#search-page-group-button > img {
-    aspect-ratio: 1 / 1;
-    height: 40%;
-    filter: invert(40%);
-    -webkit-user-drag: none;
-}
-
-#search-page-group-button:hover > img {
-    filter: invert(80%);
-}
-
-#search-page-group-button.selected > img {
-    filter: invert(100%);
-}
-
-#search-page-group-select-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-}
-
-#search-page-group-select {
-    position: relative;
-}
-
-#search-page-group-select > div {
-    position: absolute;
-    right: 0;
-    width: 140px;
-    background-color: #202020;
-    border: 1px solid #808080;
-    z-index: 4;
-}
-
 .search-page-filter-not-found {
+    height: 100%;
     padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
     color: #808080;
 }
 
 .search-page-filter-option-container {
+    height: 100%;
     max-height: 200px;
     display: flex;
     flex-direction: column;
@@ -193,5 +155,17 @@
 
 #search-page-tag-filter-container {
     width: 300px;
-    height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+#search-page-group-select-container {
+    width: 140px;
+}
+
+#search-page-label-text {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 0.8em;
+    color: #808080;
 }

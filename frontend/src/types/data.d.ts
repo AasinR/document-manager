@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { LengthType } from "react-spinners/helpers/props";
+import { LabelType } from "../utils/data";
 
 declare global {
     interface JwtData {
@@ -32,6 +33,27 @@ declare global {
     interface UseAuthType {
         auth: User | null;
         setAuth: React.Dispatch<React.SetStateAction<User | null>>;
+    }
+
+    interface AuthorOption {
+        name: string;
+        selected: boolean;
+    }
+
+    interface LabelOption {
+        tag: Tag;
+        selected: boolean;
+    }
+
+    interface GroupLabelOption {
+        groupId: string;
+        tagList: LabelOption[];
+    }
+
+    interface ActiveLabelType {
+        type: LabelType;
+        groupId?: string;
+        groupName?: string;
     }
 }
 

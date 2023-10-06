@@ -7,12 +7,27 @@ import {
     SearchBar,
     SearchFilter,
 } from "../components";
-import { useAuth } from "../hooks";
-import arrowImage from "../assets/icons/downward-arrow.png";
+import { useAuth, useAuthorFilter, useLabelFilter } from "../hooks";
+import { LabelType } from "../utils/data";
 import "./SearchPage.css";
 
 function SearchPage() {
     const { auth } = useAuth();
+    const {
+        shownLabelList,
+        fetchLabelList,
+        updateLabelList,
+        isLabelListExists,
+        isLabelListEmpty,
+        queryLabelList,
+    } = useLabelFilter();
+    const {
+        authorList,
+        shownAuthorList,
+        fetchAuthorList,
+        updateAuthorList,
+        queryAuthorList,
+    } = useAuthorFilter();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -21,17 +36,13 @@ function SearchPage() {
         DocumentResponse[]
     >([]);
 
-    const [groupSelect, setGroupSelect] = useState<boolean>(false);
     const [groupList, setGroupList] = useState<Group[] | null>(null);
-    const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+    const [activeLabel, setActiveLabel] = useState<ActiveLabelType | null>(
+        null
+    );
 
+    const [labelSearchValue, setLabelSearchValue] = useState<string>("");
     const [authorSearchValue, setAuthorSearchValue] = useState<string>("");
-    const [authorList, setAuthorList] = useState<
-        { name: string; selected: boolean }[] | null
-    >(null);
-    const [shownAuthorList, setShownAuthorList] = useState<
-        { name: string; selected: boolean }[]
-    >([]);
 
     const search = useCallback(
         (searchValue: string) => {
@@ -59,12 +70,31 @@ function SearchPage() {
     };
 
     const handleLabelFilterSelect = () => {
-        // TODO: reset tag select
-        setGroupSelect(false);
+        setLabelSearchValue("");
+        if (activeLabel === null) {
+            const labelType: ActiveLabelType = { type: LabelType.PUBLIC };
+            setActiveLabel(labelType);
+            fetchLabelList(labelType);
+        }
+    };
+
+    const updateLabelType = (value: ActiveLabelType) => {
+        if (value === activeLabel) return;
+        setActiveLabel(value);
+        fetchLabelList(value);
+    };
+
+    const getLabelFilterText = (): string => {
+        if (activeLabel === null) return "";
+        const labelTypeToText: { [key: string]: string } = {
+            [LabelType.PUBLIC]: "Public",
+            [LabelType.PRIVATE]: "Private",
+            [LabelType.GROUP]: `Group: ${activeLabel.groupName}`,
+        };
+        return labelTypeToText[activeLabel.type] || "";
     };
 
     const fetchGroupList = () => {
-        setGroupSelect(!groupSelect);
         if (groupList !== null) return;
         axios
             .get(
@@ -78,52 +108,18 @@ function SearchPage() {
             });
     };
 
-    const updateSelectedGroupId = (id: string) => {
-        if (id === selectedGroupId) setSelectedGroupId("");
-        else setSelectedGroupId(id);
-    };
-
-    const fetchAuthorList = () => {
+    const handelAuthorFilterSelect = () => {
         setAuthorSearchValue("");
-        if (authorList !== null) return;
-        const authors = documentList.flatMap(
-            (data) => data.metadata.authorList
-        );
-        const uniqueAuthors = Array.from(new Set(authors)).sort();
-        const authorObjList = uniqueAuthors.map((author) => ({
-            name: author,
-            selected: false,
-        }));
-        setAuthorList(authorObjList);
-        setShownAuthorList(authorObjList);
+        fetchAuthorList(documentList);
     };
 
-    const updateAuthorList = (authorObj: {
-        name: string;
-        selected: boolean;
-    }) => {
-        const updatedAuthor = {
-            name: authorObj.name,
-            selected: !authorObj.selected,
-        };
-        const newState = authorList!.map((obj) =>
-            obj === authorObj ? updatedAuthor : obj
-        );
-        const newSearchState = shownAuthorList.map((obj) =>
-            obj === authorObj ? updatedAuthor : obj
-        );
-        setAuthorList(newState);
-        setShownAuthorList(newSearchState);
-    };
-
-    // author filter search
     useEffect(() => {
-        const searchQuery = authorSearchValue.toLowerCase();
-        const result = authorList?.filter((value) =>
-            value.name.toLowerCase().includes(searchQuery)
-        ) ?? [];
-        setShownAuthorList(result);
-    }, [authorList, authorSearchValue]);
+        queryLabelList(activeLabel, labelSearchValue);
+    }, [activeLabel, labelSearchValue, queryLabelList]);
+
+    useEffect(() => {
+        queryAuthorList(authorSearchValue);
+    }, [authorSearchValue, queryAuthorList]);
 
     // get document
     useEffect(() => {
@@ -153,7 +149,6 @@ function SearchPage() {
                     onSearch={handleSearch}
                 />
                 <div id="search-page-filer-container">
-                    {/*TODO: tag filter*/}
                     <SearchFilter
                         containerId="search-page-tag-filter-container"
                         title="Label"
@@ -164,53 +159,131 @@ function SearchPage() {
                                 type="text"
                                 placeholder="Search..."
                                 spellCheck={false}
+                                value={labelSearchValue}
+                                onChange={(event) =>
+                                    setLabelSearchValue(event.target.value)
+                                }
                             />
                             <div className="search-page-filter-header-options">
-                                <button>Public</button>
-                                <button>Private</button>
                                 <button
-                                    id="search-page-group-button"
-                                    className={groupSelect ? "selected" : ""}
-                                    onClick={fetchGroupList}
+                                    className={
+                                        activeLabel?.type === LabelType.PUBLIC
+                                            ? "selected"
+                                            : ""
+                                    }
+                                    onClick={() =>
+                                        updateLabelType({
+                                            type: LabelType.PUBLIC,
+                                        })
+                                    }
                                 >
-                                    <p>Group</p>
-                                    <img src={arrowImage} alt="v" />
+                                    Public
                                 </button>
-                            </div>
-                            {groupSelect ? (
-                                <>
-                                    <div
-                                        id="search-page-group-select-overlay"
-                                        onClick={() => setGroupSelect(false)}
-                                    ></div>
-                                    <div id="search-page-group-select">
-                                        {groupSelect ? (
-                                            <div className="search-page-filter-option-container">
-                                                {groupList === null ? (
-                                                    <LoadingPanel size={30} speedMultiplier={0.6} />
-                                                ) : (
-                                                    <>
-                                                        {groupList.length === 0 ? <p className="search-page-filter-not-found">No Groups Found</p> : null}
-                                                        {groupList.map((group) => (
-                                                            <button
-                                                                key={group.id}
-                                                                className={group.id === selectedGroupId ? "selected" : ""}
-                                                                onClick={() => updateSelectedGroupId(group.id)}
-                                                            >
-                                                                <p>{group.name}</p>
-                                                                {group.id === selectedGroupId && <p>✓</p>}
-                                                            </button>
-                                                        ))}
-                                                    </>
-                                                )}
-                                            </div>
-                                        ) : null}
+                                <button
+                                    className={
+                                        activeLabel?.type === LabelType.PRIVATE
+                                            ? "selected"
+                                            : ""
+                                    }
+                                    onClick={() =>
+                                        updateLabelType({
+                                            type: LabelType.PRIVATE,
+                                        })
+                                    }
+                                >
+                                    Private
+                                </button>
+                                <SearchFilter
+                                    title="Group"
+                                    onClick={fetchGroupList}
+                                    containerId="search-page-group-select-container"
+                                    showAsActive={
+                                        activeLabel?.type === LabelType.GROUP
+                                    }
+                                >
+                                    <div className="search-page-filter-option-container">
+                                        {groupList === null ? (
+                                            <LoadingPanel
+                                                size={30}
+                                                speedMultiplier={0.6}
+                                            />
+                                        ) : (
+                                            <>
+                                                {groupList.length === 0 ? (
+                                                    <p className="search-page-filter-not-found">
+                                                        No Groups Found
+                                                    </p>
+                                                ) : null}
+                                                {groupList.map((group) => (
+                                                    <button
+                                                        key={group.id}
+                                                        className={
+                                                            group.id ===
+                                                            activeLabel?.groupId
+                                                                ? "selected"
+                                                                : ""
+                                                        }
+                                                        onClick={() =>
+                                                            updateLabelType({
+                                                                type: LabelType.GROUP,
+                                                                groupId:
+                                                                    group.id,
+                                                                groupName:
+                                                                    group.name,
+                                                            })
+                                                        }
+                                                    >
+                                                        <p>{group.name}</p>
+                                                        {group.id ===
+                                                            activeLabel?.groupId && (
+                                                            <p>✓</p>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
+                                </SearchFilter>
+                            </div>
+                            <p id="search-page-label-text">
+                                Filtered by {getLabelFilterText()}
+                            </p>
+                        </div>
+                        <div className="search-page-filter-option-container">
+                            {isLabelListExists(activeLabel) ? (
+                                <LoadingPanel size={30} speedMultiplier={0.6} />
+                            ) : (
+                                <>
+                                    {isLabelListEmpty(activeLabel) ? (
+                                        <p className="search-page-filter-not-found">
+                                            No Label Found
+                                        </p>
+                                    ) : null}
+                                    {shownLabelList.map((data) => (
+                                        <button
+                                            key={data.tag.id}
+                                            className={
+                                                data.selected ? "selected" : ""
+                                            }
+                                            onClick={() =>
+                                                updateLabelList(
+                                                    activeLabel,
+                                                    data
+                                                )
+                                            }
+                                        >
+                                            <p>{data.tag.name}</p>
+                                            <p>{data.selected ? "✓" : null}</p>
+                                        </button>
+                                    ))}
                                 </>
-                            ) : null}
+                            )}
                         </div>
                     </SearchFilter>
-                    <SearchFilter title="Author" onClick={fetchAuthorList}>
+                    <SearchFilter
+                        title="Author"
+                        onClick={handelAuthorFilterSelect}
+                    >
                         <div className="search-page-filter-header">
                             <input
                                 type="text"
@@ -227,12 +300,20 @@ function SearchPage() {
                                 <LoadingPanel size={30} speedMultiplier={0.6} />
                             ) : (
                                 <>
-                                    {authorList.length === 0 ? <p className="search-page-filter-not-found">No Author Found</p> : null}
+                                    {authorList.length === 0 ? (
+                                        <p className="search-page-filter-not-found">
+                                            No Author Found
+                                        </p>
+                                    ) : null}
                                     {shownAuthorList.map((data) => (
                                         <button
                                             key={data.name}
-                                            className={data.selected ? "selected" : ""}
-                                            onClick={() => updateAuthorList(data)}
+                                            className={
+                                                data.selected ? "selected" : ""
+                                            }
+                                            onClick={() =>
+                                                updateAuthorList(data)
+                                            }
                                         >
                                             <p>{data.name}</p>
                                             <p>{data.selected ? "✓" : null}</p>

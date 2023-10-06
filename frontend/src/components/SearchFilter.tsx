@@ -10,6 +10,7 @@ function SearchFilter({
     containerClassName,
     title,
     onClick,
+    showAsActive,
 }: {
     children: React.ReactElement | React.ReactElement[] | null;
     id: string;
@@ -18,6 +19,7 @@ function SearchFilter({
     containerClassName: string;
     title: string;
     onClick: () => void;
+    showAsActive: boolean;
 }) {
     const [active, setActive] = useState<boolean>(false);
 
@@ -30,7 +32,7 @@ function SearchFilter({
         <div id={id} className={`search-filter ${className}`}>
             <button
                 className={`search-filter-button ${
-                    active ? "selected" : ""
+                    active || showAsActive ? "selected" : ""
                 }`}
                 onClick={handleButton}
             >
@@ -65,6 +67,7 @@ SearchFilter.defaultProps = {
     containerClassName: "",
     title: "",
     onClick: () => {},
+    showAsActive: false,
 };
 
 export default SearchFilter;

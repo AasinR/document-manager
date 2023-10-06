@@ -8,3 +8,9 @@ export enum GroupPermission {
     ADMIN = "ADMIN",
     OWNER = "OWNER",
 }
+
+export enum LabelType {
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE",
+    GROUP = "GROUP",
+}
