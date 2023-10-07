@@ -12,7 +12,7 @@ function SearchFilter({
     onClick,
     showAsActive,
 }: {
-    children: React.ReactElement | React.ReactElement[] | null;
+    children: React.ReactElement | (React.ReactElement | null)[] | null;
     id: string;
     className: string;
     containerId: string;

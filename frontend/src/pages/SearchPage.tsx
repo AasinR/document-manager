@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     DocumentCard,
@@ -7,8 +7,13 @@ import {
     SearchBar,
     SearchFilter,
 } from "../components";
-import { useAuth, useAuthorFilter, useLabelFilter } from "../hooks";
-import { LabelType } from "../utils/data";
+import {
+    useAuth,
+    useAuthorFilter,
+    useLabelFilter,
+    useYearFilter,
+} from "../hooks";
+import { LabelType, YearFilterType } from "../utils/data";
 import "./SearchPage.css";
 
 function SearchPage() {
@@ -28,6 +33,14 @@ function SearchPage() {
         updateAuthorList,
         queryAuthorList,
     } = useAuthorFilter();
+    const {
+        activeYearFilter,
+        yearFilterValue,
+        handleYearTypeSelect,
+        updateExactYearValue,
+        updateYearFromValue,
+        updateYearToValue,
+    } = useYearFilter();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -113,6 +126,56 @@ function SearchPage() {
         fetchAuthorList(documentList);
     };
 
+    const renderYearFilter = (): React.ReactElement | null => {
+        const yearFilters = {
+            [YearFilterType.NONE]: (
+                <p className="search-page-filter-not-found">
+                    Publication year not filtered
+                </p>
+            ),
+            [YearFilterType.EXACT]: (
+                <input
+                    className="search-page-year-input"
+                    type="number"
+                    placeholder="Year"
+                    min={0}
+                    value={yearFilterValue?.exact ?? ""}
+                    onChange={(event) =>
+                        updateExactYearValue(event.target.value)
+                    }
+                />
+            ),
+            [YearFilterType.RANGE]: (
+                <div id="search-page-date-input-container">
+                    <input
+                        className="search-page-year-input"
+                        type="number"
+                        placeholder="From"
+                        min={0}
+                        max={yearFilterValue?.to}
+                        value={yearFilterValue?.from ?? ""}
+                        onChange={(event) =>
+                            updateYearFromValue(event.target.value)
+                        }
+                    />
+                    <span>—</span>
+                    <input
+                        className="search-page-year-input"
+                        type="number"
+                        placeholder="To"
+                        min={yearFilterValue?.from}
+                        value={yearFilterValue?.to ?? ""}
+                        onChange={(event) =>
+                            updateYearToValue(event.target.value)
+                        }
+                    />
+                </div>
+            ),
+        };
+
+        return yearFilters[activeYearFilter] || null;
+    };
+
     useEffect(() => {
         queryLabelList(activeLabel, labelSearchValue);
     }, [activeLabel, labelSearchValue, queryLabelList]);
@@ -164,7 +227,10 @@ function SearchPage() {
                                     setLabelSearchValue(event.target.value)
                                 }
                             />
-                            <div className="search-page-filter-header-options">
+                            <div
+                                id="search-page-label-button-container"
+                                className="search-page-filter-header-options"
+                            >
                                 <button
                                     className={
                                         activeLabel?.type === LabelType.PUBLIC
@@ -323,7 +389,54 @@ function SearchPage() {
                             )}
                         </div>
                     </SearchFilter>
-                    <SearchFilter title="Publication Date"></SearchFilter>
+                    <SearchFilter
+                        containerId="search-page-date-filter-container"
+                        containerClassName="search-page-filter-header"
+                        title="Publication Year"
+                    >
+                        <div
+                            id="search-page-date-button-container"
+                            className="search-page-filter-header-options"
+                        >
+                            <button
+                                className={
+                                    activeYearFilter === YearFilterType.NONE
+                                        ? "selected"
+                                        : ""
+                                }
+                                onClick={() =>
+                                    handleYearTypeSelect(YearFilterType.NONE)
+                                }
+                            >
+                                None
+                            </button>
+                            <button
+                                className={
+                                    activeYearFilter === YearFilterType.EXACT
+                                        ? "selected"
+                                        : ""
+                                }
+                                onClick={() =>
+                                    handleYearTypeSelect(YearFilterType.EXACT)
+                                }
+                            >
+                                Exact Year
+                            </button>
+                            <button
+                                className={
+                                    activeYearFilter === YearFilterType.RANGE
+                                        ? "selected"
+                                        : ""
+                                }
+                                onClick={() =>
+                                    handleYearTypeSelect(YearFilterType.RANGE)
+                                }
+                            >
+                                Year Range
+                            </button>
+                        </div>
+                        {renderYearFilter()}
+                    </SearchFilter>
                     <SearchFilter title="Other"></SearchFilter>
                 </div>
                 <div id="search-page-container">

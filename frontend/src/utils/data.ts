@@ -14,3 +14,9 @@ export enum LabelType {
     PRIVATE = "PRIVATE",
     GROUP = "GROUP",
 }
+
+export enum YearFilterType {
+    NONE = "NONE",
+    EXACT = "EXACT",
+    RANGE = "RANGE",
+}

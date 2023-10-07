@@ -55,7 +55,6 @@
 
 .search-page-filter-header-options {
     width: 100%;
-    margin-top: 0.5rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -159,13 +158,55 @@
     flex-direction: column;
 }
 
-#search-page-group-select-container {
-    width: 140px;
+#search-page-label-button-container {
+    margin-top: 0.5rem;
 }
 
 #search-page-label-text {
     margin-top: 0.5rem;
     text-align: center;
     font-size: 0.8em;
+    color: #808080;
+}
+
+#search-page-group-select-container {
+    width: 140px;
+}
+
+#search-page-date-filter-container {
+    width: 300px;
+}
+
+#search-page-date-button-container {
+    margin-bottom: 0.5rem;
+}
+
+#search-page-date-input-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+#search-page-date-input-container > input {
+    width: 40%;
+}
+
+.search-page-year-input {
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.search-page-year-input::-webkit-inner-spin-button,
+.search-page-year-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+#search-page-date-input-container > span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: #808080;
 }

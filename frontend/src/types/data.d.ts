@@ -55,6 +55,12 @@ declare global {
         groupId?: string;
         groupName?: string;
     }
+
+    interface YearFilterValue {
+        exact?: number;
+        from?: number;
+        to?: number;
+    }
 }
 
 export {};
