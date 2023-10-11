@@ -1,0 +1,21 @@
+.document-card {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 1px solid #808080;
+}
+
+.document-card > h1 {
+    font-size: 1.2em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.document-card > p {
+    font-size: 0.9em;
+    font-style: italic;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
