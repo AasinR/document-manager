@@ -61,7 +61,8 @@
     align-items: center;
 }
 
-.search-page-filter-header-options > button {
+.search-page-filter-header-options > button,
+#search-page-filter-reset {
     height: 35px;
     padding: 0 0.5rem;
     color: #808080;
@@ -70,11 +71,13 @@
     border: 1px solid #808080;
 }
 
-.search-page-filter-header-options > button:hover {
+.search-page-filter-header-options > button:hover,
+#search-page-filter-reset:hover {
     color: #dddddd;
 }
 
-.search-page-filter-header-options > button.selected {
+.search-page-filter-header-options > button.selected,
+#search-page-filter-reset:active {
     color: #ffffff;
 }
 

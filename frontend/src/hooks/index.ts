@@ -1,3 +1,4 @@
+export { default as useDocumentSearch } from "./useDocumentSearch";
 export { default as useAuthenticate } from "./useAuthenticate";
 export { default as useAuthorFilter } from "./useAuthorFilter";
 export { default as useLabelFilter } from "./useLabelFilter";

@@ -1,31 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { YearFilterType } from "../utils/data";
+import { getYearUrlParam } from "../utils/search";
 
-function useYearFilter() {
+function useYearFilter(searchParams: URLSearchParams) {
     const [activeYearFilter, setActiveYearFilter] = useState<YearFilterType>(
         YearFilterType.NONE
     );
-    const [yearFilterValue, setYearFilterValue] =
-        useState<YearFilterValue | null>(null);
+    const [yearFilterValue, setYearFilterValue] = useState<YearFilterValue>({});
+
+    useEffect(() => {
+        const value = getYearUrlParam(searchParams);
+        if (Object.keys(value).length === 0) return;
+        setYearFilterValue(value);
+        if (value.exact !== undefined)
+            setActiveYearFilter(YearFilterType.EXACT);
+        else setActiveYearFilter(YearFilterType.RANGE);
+    }, [searchParams]);
 
     const handleYearTypeSelect = (yearType: YearFilterType) => {
         if (yearType === activeYearFilter) return;
         setActiveYearFilter(yearType);
 
-        let newYearValue: YearFilterValue | null = null;
+        let newYearValue: YearFilterValue = {};
         switch (yearType) {
             case YearFilterType.NONE:
-                newYearValue = null;
+                newYearValue = {};
                 break;
             case YearFilterType.EXACT:
                 newYearValue = {
-                    exact: yearFilterValue?.to,
+                    exact: yearFilterValue?.to ?? undefined,
                 };
                 break;
             case YearFilterType.RANGE:
                 newYearValue = {
-                    from: yearFilterValue?.exact,
-                    to: yearFilterValue?.exact,
+                    from: yearFilterValue?.exact ?? null,
+                    to: yearFilterValue?.exact ?? null,
                 };
                 break;
             default:
@@ -41,9 +50,12 @@ function useYearFilter() {
         });
     };
 
-    const updateYearFromValue = (value: string) => {
-        let newValue = value ? parseInt(value, 10) : undefined;
-        if (newValue && yearFilterValue?.to) {
+    const updateYearFromValue = (
+        value: string,
+        isValueCheck: boolean = false
+    ) => {
+        let newValue = value ? parseInt(value, 10) : null;
+        if (isValueCheck && newValue != null && yearFilterValue?.to != null) {
             newValue =
                 newValue > yearFilterValue.to ? yearFilterValue.to : newValue;
         }
@@ -53,9 +65,12 @@ function useYearFilter() {
         });
     };
 
-    const updateYearToValue = (value: string) => {
-        let newValue = value ? parseInt(value, 10) : undefined;
-        if (newValue && yearFilterValue?.from) {
+    const updateYearToValue = (
+        value: string,
+        isValueCheck: boolean = false
+    ) => {
+        let newValue = value ? parseInt(value, 10) : null;
+        if (isValueCheck && newValue != null && yearFilterValue?.from != null) {
             newValue =
                 newValue < yearFilterValue.from
                     ? yearFilterValue.from
@@ -67,6 +82,11 @@ function useYearFilter() {
         });
     };
 
+    const resetYearFilter = () => {
+        setActiveYearFilter(YearFilterType.NONE);
+        setYearFilterValue({});
+    };
+
     return {
         activeYearFilter,
         yearFilterValue,
@@ -74,6 +94,7 @@ function useYearFilter() {
         updateExactYearValue,
         updateYearFromValue,
         updateYearToValue,
+        resetYearFilter,
     };
 }
 

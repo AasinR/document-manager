@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react";
 import { changeStateListValue } from "../utils/util";
+import { getAuthorUrlParam } from "../utils/search";
 
-function useAuthorFilter() {
+function useAuthorFilter(searchParams: URLSearchParams) {
     const [authorList, setAuthorList] = useState<AuthorOption[] | null>(null);
     const [shownAuthorList, setShownAuthorList] = useState<AuthorOption[]>([]);
 
@@ -11,10 +12,11 @@ function useAuthorFilter() {
             (data) => data.metadata.authorList
         );
         const uniqueAuthorList = Array.from(new Set(authors)).sort();
+        const selectedAuthorList = getAuthorUrlParam(searchParams);
         const authorOptionList = uniqueAuthorList.map(
             (author): AuthorOption => ({
                 name: author,
-                selected: false,
+                selected: selectedAuthorList.includes(author),
             })
         );
         setAuthorList(authorOptionList);
@@ -46,12 +48,24 @@ function useAuthorFilter() {
         [authorList]
     );
 
+    const resetAuthorList = () => {
+        if (authorList) {
+            const newList: AuthorOption[] = authorList?.map((author) => ({
+                name: author.name,
+                selected: false,
+            }));
+            setAuthorList(newList);
+            setShownAuthorList(newList);
+        }
+    };
+
     return {
         authorList,
         shownAuthorList,
         fetchAuthorList,
         updateAuthorList,
         queryAuthorList,
+        resetAuthorList,
     };
 }
 

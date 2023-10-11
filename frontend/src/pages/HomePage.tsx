@@ -2,33 +2,27 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DocumentCard, SearchBar } from "../components";
+import { useDocumentSearch } from "../hooks";
+import { generateSearchUrl } from "../utils/search";
 import "./HomePage.css";
 
 function HomePage() {
     const navigate = useNavigate();
-
-    const [documentList, setDocumentList] = useState<DocumentResponse[]>([]);
-    const [shownDocumentList, setShownDocumentList] = useState<
-        DocumentResponse[]
-    >([]);
+    const {
+        documentList,
+        setDocumentList,
+        shownDocumentList,
+        searchByStringQuery,
+    } = useDocumentSearch();
     const [showSearchPanel, setShowSearchPanel] = useState<boolean>(false);
 
     const handleSearch = (searchValue: string) => {
-        navigate(`/search?query=${searchValue}`);
+        navigate(generateSearchUrl("/search", searchValue));
     };
 
     const handleWrite = (searchValue: string) => {
         if (!showSearchPanel && searchValue !== "") setShowSearchPanel(true);
-        const searchWord = searchValue.toLowerCase();
-        const result = documentList.filter((value: DocumentResponse) => {
-            return (
-                value.metadata.title.toLowerCase().includes(searchWord) ||
-                value.metadata.authorList.some((author) =>
-                    author.toLowerCase().includes(searchWord)
-                )
-            );
-        });
-        setShownDocumentList(result);
+        searchByStringQuery(documentList, searchValue);
     };
 
     const handleOpenResult = (data: DocumentResponse) => {
@@ -44,7 +38,7 @@ function HomePage() {
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
+    }, [setDocumentList]);
 
     return (
         <div id="home-page" className="page">

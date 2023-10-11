@@ -58,8 +58,13 @@ declare global {
 
     interface YearFilterValue {
         exact?: number;
-        from?: number;
-        to?: number;
+        from?: number | null;
+        to?: number | null;
+    }
+
+    interface GroupTagIdValue {
+        groupId: string;
+        tagIdList: string[];
     }
 }
 

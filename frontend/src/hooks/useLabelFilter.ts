@@ -1,9 +1,18 @@
 import { useCallback, useState } from "react";
 import axios, { AxiosResponse } from "axios";
 import { LabelType } from "../utils/data";
-import { changeStateListValue } from "../utils/util";
+import {
+    changeStateListValue,
+    getLabelOptionList,
+    resetLabelOptionList,
+} from "../utils/util";
+import {
+    getGroupTagUrlParam,
+    getPrivateTagUrlParam,
+    getPublicTagUrlParam,
+} from "../utils/search";
 
-function useLabelFilter() {
+function useLabelFilter(searchParams: URLSearchParams) {
     const [publicLabelList, setPublicLabelList] = useState<
         LabelOption[] | null
     >(null);
@@ -53,36 +62,53 @@ function useLabelFilter() {
         if (axiosPromise) {
             axiosPromise
                 .then((response: AxiosResponse<Tag[]>) => {
-                    const labelOptionList = response.data.map(
-                        (tag): LabelOption => ({
-                            tag,
-                            selected: false,
-                        })
-                    );
-
+                    let shownLabelOptionList: LabelOption[] = [];
                     switch (activeLabel.type) {
                         case LabelType.PUBLIC:
-                            setPublicLabelList(labelOptionList);
+                            const publicList = getLabelOptionList(
+                                response.data,
+                                getPublicTagUrlParam(searchParams)
+                            );
+                            setPublicLabelList(publicList);
+                            shownLabelOptionList = publicList;
                             break;
 
                         case LabelType.PRIVATE:
-                            setPrivateLabelList(labelOptionList);
+                            const privateList = getLabelOptionList(
+                                response.data,
+                                getPrivateTagUrlParam(searchParams)
+                            );
+                            setPrivateLabelList(privateList);
+                            shownLabelOptionList = privateList;
                             break;
 
                         case LabelType.GROUP:
+                            const selectedGroup = getGroupTagUrlParam(
+                                searchParams
+                            ).find(
+                                (value) => value.groupId === activeLabel.groupId
+                            );
+                            const tagList = selectedGroup
+                                ? selectedGroup.tagIdList
+                                : undefined;
+                            const groupList = getLabelOptionList(
+                                response.data,
+                                tagList
+                            );
                             setGroupLabelList([
                                 ...groupLabelList,
                                 {
                                     groupId: activeLabel.groupId!,
-                                    tagList: labelOptionList,
+                                    tagList: groupList,
                                 },
                             ]);
+                            shownLabelOptionList = groupList;
                             break;
 
                         default:
                             break;
                     }
-                    setShownLabelList(labelOptionList);
+                    setShownLabelList(shownLabelOptionList);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -211,6 +237,24 @@ function useLabelFilter() {
         [groupLabelList, privateLabelList, publicLabelList]
     );
 
+    const resetLabelLists = () => {
+        if (publicLabelList) {
+            setPublicLabelList(resetLabelOptionList(publicLabelList));
+        }
+        if (privateLabelList) {
+            setPrivateLabelList(resetLabelOptionList(privateLabelList));
+        }
+        if (groupLabelList) {
+            setGroupLabelList(
+                groupLabelList.map((group) => ({
+                    groupId: group.groupId,
+                    tagList: resetLabelOptionList(group.tagList),
+                }))
+            );
+        }
+        setShownLabelList(resetLabelOptionList(shownLabelList));
+    };
+
     return {
         publicLabelList,
         privateLabelList,
@@ -221,6 +265,7 @@ function useLabelFilter() {
         isLabelListExists,
         isLabelListEmpty,
         queryLabelList,
+        resetLabelLists,
     };
 }
 

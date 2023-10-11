@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     DocumentCard,
@@ -10,29 +10,52 @@ import {
 import {
     useAuth,
     useAuthorFilter,
+    useDocumentSearch,
     useLabelFilter,
     useYearFilter,
 } from "../hooks";
 import { LabelType, YearFilterType } from "../utils/data";
+import {
+    generateSearchUrl,
+    getAuthorUrlParam,
+    getGroupTagUrlParam,
+    getPrivateTagUrlParam,
+    getPublicTagUrlParam,
+    getQueryUrlParam,
+    getYearUrlParam,
+} from "../utils/search";
 import "./SearchPage.css";
 
 function SearchPage() {
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const { auth } = useAuth();
     const {
+        documentList,
+        setDocumentList,
+        shownDocumentList,
+        searchByFilterQuery,
+    } = useDocumentSearch();
+    const {
+        publicLabelList,
+        privateLabelList,
+        groupLabelList,
         shownLabelList,
         fetchLabelList,
         updateLabelList,
         isLabelListExists,
         isLabelListEmpty,
         queryLabelList,
-    } = useLabelFilter();
+        resetLabelLists,
+    } = useLabelFilter(searchParams);
     const {
         authorList,
         shownAuthorList,
         fetchAuthorList,
         updateAuthorList,
         queryAuthorList,
-    } = useAuthorFilter();
+        resetAuthorList,
+    } = useAuthorFilter(searchParams);
     const {
         activeYearFilter,
         yearFilterValue,
@@ -40,14 +63,8 @@ function SearchPage() {
         updateExactYearValue,
         updateYearFromValue,
         updateYearToValue,
-    } = useYearFilter();
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-
-    const [documentList, setDocumentList] = useState<DocumentResponse[]>([]);
-    const [shownDocumentList, setShownDocumentList] = useState<
-        DocumentResponse[]
-    >([]);
+        resetYearFilter,
+    } = useYearFilter(searchParams);
 
     const [groupList, setGroupList] = useState<Group[] | null>(null);
     const [activeLabel, setActiveLabel] = useState<ActiveLabelType | null>(
@@ -57,25 +74,18 @@ function SearchPage() {
     const [labelSearchValue, setLabelSearchValue] = useState<string>("");
     const [authorSearchValue, setAuthorSearchValue] = useState<string>("");
 
-    const search = useCallback(
-        (searchValue: string) => {
-            const searchWord = searchValue.toLowerCase();
-            const result = documentList.filter((value: DocumentResponse) => {
-                return (
-                    value.metadata.title.toLowerCase().includes(searchWord) ||
-                    value.metadata.authorList.some((author) =>
-                        author.toLowerCase().includes(searchWord)
-                    )
-                );
-            });
-            setShownDocumentList(result);
-        },
-        [documentList]
-    );
-
     const handleSearch = (searchValue: string) => {
-        search(searchValue);
-        navigate(`/search?query=${searchValue}`);
+        navigate(
+            generateSearchUrl(
+                "/search",
+                searchValue,
+                publicLabelList,
+                privateLabelList,
+                groupLabelList,
+                authorList,
+                yearFilterValue
+            )
+        );
     };
 
     const handleOpenResult = (data: DocumentResponse) => {
@@ -121,7 +131,7 @@ function SearchPage() {
             });
     };
 
-    const handelAuthorFilterSelect = () => {
+    const handleAuthorFilterSelect = () => {
         setAuthorSearchValue("");
         fetchAuthorList(documentList);
     };
@@ -152,10 +162,16 @@ function SearchPage() {
                         type="number"
                         placeholder="From"
                         min={0}
-                        max={yearFilterValue?.to}
+                        max={yearFilterValue?.to ?? undefined}
                         value={yearFilterValue?.from ?? ""}
                         onChange={(event) =>
                             updateYearFromValue(event.target.value)
+                        }
+                        onBlur={() =>
+                            updateYearFromValue(
+                                yearFilterValue.from?.toString() ?? "",
+                                true
+                            )
                         }
                     />
                     <span>—</span>
@@ -163,10 +179,16 @@ function SearchPage() {
                         className="search-page-year-input"
                         type="number"
                         placeholder="To"
-                        min={yearFilterValue?.from}
+                        min={yearFilterValue?.from ?? undefined}
                         value={yearFilterValue?.to ?? ""}
                         onChange={(event) =>
                             updateYearToValue(event.target.value)
+                        }
+                        onBlur={() =>
+                            updateYearToValue(
+                                yearFilterValue.to?.toString() ?? "",
+                                true
+                            )
                         }
                     />
                 </div>
@@ -174,6 +196,13 @@ function SearchPage() {
         };
 
         return yearFilters[activeYearFilter] || null;
+    };
+
+    const handleFilterReset = () => {
+        resetLabelLists();
+        resetAuthorList();
+        resetYearFilter();
+        navigate("/search");
     };
 
     useEffect(() => {
@@ -190,25 +219,31 @@ function SearchPage() {
             .get(`${process.env.REACT_APP_API_URL}/documents/all`)
             .then((response) => {
                 setDocumentList(response.data);
-                setShownDocumentList(response.data);
             })
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
+    }, [setDocumentList]);
 
     // set search value
     useEffect(() => {
         if (documentList.length === 0) return;
-        search(searchParams.get("query") ?? "");
-    }, [search, searchParams, documentList]);
+        searchByFilterQuery(
+            getPublicTagUrlParam(searchParams),
+            getPrivateTagUrlParam(searchParams),
+            getGroupTagUrlParam(searchParams),
+            getAuthorUrlParam(searchParams),
+            getYearUrlParam(searchParams),
+            getQueryUrlParam(searchParams)
+        );
+    }, [documentList.length, searchByFilterQuery, searchParams]);
 
     return (
         <div id="search-page" className="page">
             <div id="search-page-mid">
                 <SearchBar
                     id="search-page-search-bar"
-                    defaultValue={searchParams.get("query") ?? ""}
+                    defaultValue={getQueryUrlParam(searchParams)}
                     onSearch={handleSearch}
                 />
                 <div id="search-page-filer-container">
@@ -348,7 +383,7 @@ function SearchPage() {
                     </SearchFilter>
                     <SearchFilter
                         title="Author"
-                        onClick={handelAuthorFilterSelect}
+                        onClick={handleAuthorFilterSelect}
                     >
                         <div className="search-page-filter-header">
                             <input
@@ -437,7 +472,12 @@ function SearchPage() {
                         </div>
                         {renderYearFilter()}
                     </SearchFilter>
-                    <SearchFilter title="Other"></SearchFilter>
+                    <button
+                        id="search-page-filter-reset"
+                        onClick={handleFilterReset}
+                    >
+                        Reset Filters
+                    </button>
                 </div>
                 <div id="search-page-container">
                     {shownDocumentList.map((data) => (
