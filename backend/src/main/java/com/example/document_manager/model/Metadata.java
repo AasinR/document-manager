@@ -8,10 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -36,13 +33,14 @@ public class Metadata {
         this.username = username;
         this.documentId = documentId;
         this.title = title;
-        this.authorList = authorList;
+        this.authorList = Objects.requireNonNullElseGet(authorList, ArrayList::new);
         this.description = description;
         this.publicationDate = publicationDate;
-        this.identifierList = identifierList;
-        this.otherData = otherData;
+        this.identifierList = Objects.requireNonNullElseGet(identifierList, HashMap::new);
+        this.otherData = Objects.requireNonNullElseGet(otherData, HashMap::new);
 
         this.timestamp = LocalDateTime.now();
         this.relatedDocumentList = new HashSet<>();
     }
+
 }

@@ -24,7 +24,7 @@ declare global {
     interface Group {
         id: string;
         name: string;
-        groupMemberList: GroupMember[]
+        groupMemberList: GroupMember[];
     }
 
     interface Metadata {
@@ -37,7 +37,7 @@ declare global {
         authorList: string[];
         description: string | null;
         publicationDate: Date | null;
-        identifierList: { [key: string]: string } | null; // TODO: covert to empty array in backend
+        identifierList: { [key: string]: string };
         otherData: { [key: string]: string };
     }
 
