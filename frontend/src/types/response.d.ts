@@ -15,6 +15,11 @@ declare global {
         permission: UserPermission;
     }
 
+    interface UserInfo {
+        username: string | null;
+        shownName: string | null;
+    }
+
     interface GroupMember {
         username: string;
         shownName: string;
@@ -27,16 +32,30 @@ declare global {
         groupMemberList: GroupMember[];
     }
 
-    interface Metadata {
+    interface MetadataResponse {
         id: string;
-        username: string | null;
+        user: UserInfo;
         documentId: string;
-        timestamp: Date;
+        timestamp: string;
         relatedDocumentList: string[];
         title: string;
         authorList: string[];
         description: string | null;
-        publicationDate: Date | null;
+        publicationDate: string | null;
+        identifierList: { [key: string]: string };
+        otherData: { [key: string]: string };
+    }
+
+    interface Metadata {
+        id: string;
+        username: string | null;
+        documentId: string;
+        timestamp: string;
+        relatedDocumentList: string[];
+        title: string;
+        authorList: string[];
+        description: string | null;
+        publicationDate: string | null;
         identifierList: { [key: string]: string };
         otherData: { [key: string]: string };
     }

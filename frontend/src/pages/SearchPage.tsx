@@ -11,6 +11,7 @@ import {
     useAuth,
     useAuthorFilter,
     useDocumentSearch,
+    useFetchGroupList,
     useLabelFilter,
     useYearFilter,
 } from "../hooks";
@@ -65,8 +66,8 @@ function SearchPage() {
         updateYearToValue,
         resetYearFilter,
     } = useYearFilter(searchParams);
+    const { groupList, fetchGroupList } = useFetchGroupList();
 
-    const [groupList, setGroupList] = useState<Group[] | null>(null);
     const [activeLabel, setActiveLabel] = useState<ActiveLabelType | null>(
         null
     );
@@ -89,7 +90,7 @@ function SearchPage() {
     };
 
     const handleOpenResult = (data: DocumentResponse) => {
-        console.log(`clicked on result: ${data.id}`);
+        navigate(`/document/${data.id}`);
     };
 
     const handleLabelFilterSelect = () => {
@@ -115,20 +116,6 @@ function SearchPage() {
             [LabelType.GROUP]: `Group: ${activeLabel.groupName}`,
         };
         return labelTypeToText[activeLabel.type] || "";
-    };
-
-    const fetchGroupList = () => {
-        if (groupList !== null) return;
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/groups/all/${auth!.username}`
-            )
-            .then((response) => {
-                setGroupList(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
     };
 
     const handleAuthorFilterSelect = () => {
@@ -296,7 +283,9 @@ function SearchPage() {
                                 </button>
                                 <SearchFilter
                                     title="Group"
-                                    onClick={fetchGroupList}
+                                    onClick={() =>
+                                        fetchGroupList(auth!.username)
+                                    }
                                     containerId="search-page-group-select-container"
                                     showAsActive={
                                         activeLabel?.type === LabelType.GROUP

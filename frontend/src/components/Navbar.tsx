@@ -10,7 +10,10 @@ function Navbar() {
 
     const [isDropdown, setIsDropdown] = useState<boolean>(false);
 
-    const navList: NavItem[] = [{ name: "Home", path: "/" }];
+    const navList: NavItem[] = [
+        { name: "Home", path: "/" },
+        { name: "Search", path: "/search" },
+    ];
     const dropdownItemList: NavItem[] = [
         { name: "Settings", path: "/settings" },
     ];

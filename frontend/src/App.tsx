@@ -12,6 +12,8 @@ import {
     LoginPage,
     AccountPage,
     SearchPage,
+    DocumentPage,
+    MetadataPage,
 } from "./pages";
 import "./App.css";
 
@@ -29,6 +31,16 @@ function App() {
                         <Route element={<PermissionFilter />}>
                             <Route path="" element={<HomePage />} />
                             <Route path="search" element={<SearchPage />} />
+                            <Route path="document">
+                                <Route path=":id">
+                                    <Route path="" element={<DocumentPage />} />
+                                    <Route
+                                        path="metadata"
+                                        element={<MetadataPage />}
+                                    />
+                                </Route>
+                                <Route path="" element={<ErrorPage />} />
+                            </Route>
                             <Route
                                 path="settings"
                                 element={<SettingsSidebar />}

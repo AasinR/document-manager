@@ -26,7 +26,7 @@ function HomePage() {
     };
 
     const handleOpenResult = (data: DocumentResponse) => {
-        console.log(`clicked on result: ${data.id}`);
+        navigate(`/document/${data.id}`);
     };
 
     useEffect(() => {
