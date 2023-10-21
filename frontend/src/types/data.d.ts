@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { LengthType } from "react-spinners/helpers/props";
-import { LabelType } from "../utils/data";
+import { CommentType, LabelType } from "../utils/data";
 
 declare global {
     interface JwtData {
@@ -65,6 +65,11 @@ declare global {
     interface GroupTagIdValue {
         groupId: string;
         tagIdList: string[];
+    }
+
+    interface ActiveCommentType {
+        type: CommentType;
+        groupId?: string;
     }
 }
 

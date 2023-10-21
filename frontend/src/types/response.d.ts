@@ -83,5 +83,14 @@ declare global {
         metadata: Metadata;
         tagCollection: DocumentTagCollection;
     }
+
+    interface CommentResponse {
+        id: string;
+        ownerId: string | null;
+        documentId: string;
+        user: UserInfo;
+        content: string;
+        timestamp: string;
+    }
 }
 export {};

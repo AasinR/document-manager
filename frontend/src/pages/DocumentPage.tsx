@@ -5,6 +5,8 @@ import { useAuth, useFetchGroupList } from "../hooks";
 import LoadingPage from "./LoadingPage";
 import ErrorPage from "./ErrorPage";
 import "./DocumentPage.css";
+import { CommentType, DocumentInfoType } from "../utils/data";
+import { CommentPanel } from "../components";
 
 function DocumentPage() {
     const { id } = useParams();
@@ -18,6 +20,13 @@ function DocumentPage() {
     const [documentData, setDocumentData] = useState<DocumentResponse | null>(
         null
     );
+
+    const [infoType, setInfoType] = useState<DocumentInfoType>(
+        DocumentInfoType.NONE
+    );
+    const [commentType, setCommentType] = useState<ActiveCommentType>({
+        type: CommentType.PUBLIC,
+    });
 
     useEffect(() => {
         if (!loading) return;
@@ -41,6 +50,22 @@ function DocumentPage() {
 
     const handleEditMetadata = () => {
         navigate(`${pathname}/metadata`);
+    };
+
+    const handleOpenComments = () => {
+        if (infoType === DocumentInfoType.COMMENT) {
+            setInfoType(DocumentInfoType.NONE);
+            return;
+        }
+        setInfoType(DocumentInfoType.COMMENT);
+    };
+
+    const handleOpenRelated = () => {
+        if (infoType === DocumentInfoType.RELATED) {
+            setInfoType(DocumentInfoType.NONE);
+            return;
+        }
+        setInfoType(DocumentInfoType.RELATED);
     };
 
     const renderIdentifierList = () => {
@@ -92,6 +117,25 @@ function DocumentPage() {
         const user = documentData?.metadata.username;
         if (user) return `Last edited at ${timestamp} by @${user}`;
         return `Created at ${timestamp}`;
+    };
+
+    const renderInfoType = () => {
+        switch (infoType) {
+            case DocumentInfoType.COMMENT:
+                return (
+                    <CommentPanel
+                        documentId={id!}
+                        groupList={groupList ?? []}
+                        commentType={commentType}
+                        setCommentType={setCommentType}
+                    />
+                );
+            case DocumentInfoType.RELATED:
+                return <p>Related Documents</p>;
+            default:
+                break;
+        }
+        return null;
     };
 
     return loading ? (
@@ -178,6 +222,31 @@ function DocumentPage() {
                         </div>
                     </div>
                 </div>
+                <div id="document-other-select">
+                    <button
+                        className={
+                            infoType === DocumentInfoType.COMMENT
+                                ? "selected"
+                                : ""
+                        }
+                        onClick={handleOpenComments}
+                    >
+                        Comments
+                    </button>
+                    <button
+                        className={
+                            infoType === DocumentInfoType.RELATED
+                                ? "selected"
+                                : ""
+                        }
+                        onClick={handleOpenRelated}
+                    >
+                        Related Documents
+                    </button>
+                </div>
+                {infoType !== DocumentInfoType.NONE ? (
+                    <div id="document-other-container">{renderInfoType()}</div>
+                ) : null}
             </div>
         </div>
     );
