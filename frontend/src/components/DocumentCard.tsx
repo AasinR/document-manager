@@ -1,9 +1,13 @@
 import "./DocumentCard.css";
 
 function DocumentCard({
+    id,
+    className,
     data,
     onClick,
 }: {
+    id: string;
+    className: string;
     data: DocumentResponse;
     onClick: (data: DocumentResponse) => void;
 }) {
@@ -12,7 +16,11 @@ function DocumentCard({
     };
 
     return (
-        <div className="document-card" onClick={handleCardClick}>
+        <div
+            id={id}
+            className={`document-card ${className}`}
+            onClick={handleCardClick}
+        >
             <h1>{data.metadata.title}</h1>
             <p>{data.metadata.authorList.join(", ")}</p>
         </div>
@@ -20,6 +28,8 @@ function DocumentCard({
 }
 
 DocumentCard.defaultProps = {
+    id: "",
+    className: "",
     onClick: () => {},
 };
 

@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { CommentPanel, RelatedDocumentPanel } from "../components";
 import { useAuth, useFetchGroupList } from "../hooks";
+import { CommentType, DocumentInfoType } from "../utils/data";
 import LoadingPage from "./LoadingPage";
 import ErrorPage from "./ErrorPage";
 import "./DocumentPage.css";
-import { CommentType, DocumentInfoType } from "../utils/data";
-import { CommentPanel } from "../components";
 
 function DocumentPage() {
     const { id } = useParams();
@@ -66,6 +66,15 @@ function DocumentPage() {
             return;
         }
         setInfoType(DocumentInfoType.RELATED);
+    };
+
+    const handleSetRelatedList = (list: string[]) => {
+        if (documentData === null) return;
+        const newState: DocumentResponse = JSON.parse(
+            JSON.stringify(documentData)
+        );
+        newState.metadata.relatedDocumentList = list;
+        setDocumentData(newState);
     };
 
     const renderIdentifierList = () => {
@@ -131,7 +140,15 @@ function DocumentPage() {
                     />
                 );
             case DocumentInfoType.RELATED:
-                return <p>Related Documents</p>;
+                return (
+                    <RelatedDocumentPanel
+                        documentId={id!}
+                        documentIdList={
+                            documentData!.metadata.relatedDocumentList
+                        }
+                        setDocumentIdList={handleSetRelatedList}
+                    />
+                );
             default:
                 break;
         }

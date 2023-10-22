@@ -1,0 +1,110 @@
+.related-panel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.related-header {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: 1px solid #808080;
+}
+
+.related-select {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.related-select > button {
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+.related-select > button:hover {
+    color: #dddddd;
+}
+.related-select > button:active,
+.related-select > button.selected {
+    color: #ffffff;
+}
+
+#related-search-bar {
+    width: 100%;
+}
+
+.related-list {
+    height: 100%;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: auto;
+}
+.related-list::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.related-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.related-list::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+.related-list > p:first-child {
+    height: 100%;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.related-document {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #808080;
+}
+
+.related-document-data {
+    border: none;
+}
+
+.related-document-console {
+    height: 100%;
+}
+
+.related-document-buttons {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.related-document-buttons > button {
+    height: 40px;
+    aspect-ratio: 1 / 1;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.related-document-buttons > button > img {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    filter: invert(40%);
+}
+.related-document-buttons > button > img:hover {
+    filter: invert(80%);
+}
