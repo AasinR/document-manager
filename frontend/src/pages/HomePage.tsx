@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DocumentCard, SearchBar } from "../components";
 import { useDocumentSearch } from "../hooks";
@@ -21,6 +21,7 @@ function HomePage() {
     };
 
     const handleWrite = (searchValue: string) => {
+        if (documentList === null) return;
         if (!showSearchPanel && searchValue !== "") setShowSearchPanel(true);
         searchByStringQuery(documentList, searchValue);
     };
@@ -50,13 +51,17 @@ function HomePage() {
                 />
                 {showSearchPanel ? (
                     <div id="home-search-container">
-                        {shownDocumentList.map((data) => (
-                            <DocumentCard
-                                key={data.id}
-                                data={data}
-                                onClick={handleOpenResult}
-                            />
-                        ))}
+                        {shownDocumentList.length === 0 ? (
+                            <p>No Documents Found</p>
+                        ) : (
+                            shownDocumentList.map((data) => (
+                                <DocumentCard
+                                    key={data.id}
+                                    data={data}
+                                    onClick={handleOpenResult}
+                                />
+                            ))
+                        )}
                     </div>
                 ) : null}
             </div>

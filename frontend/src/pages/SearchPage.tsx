@@ -119,6 +119,7 @@ function SearchPage() {
     };
 
     const handleAuthorFilterSelect = () => {
+        if (documentList === null) return;
         setAuthorSearchValue("");
         fetchAuthorList(documentList);
     };
@@ -214,7 +215,7 @@ function SearchPage() {
 
     // set search value
     useEffect(() => {
-        if (documentList.length === 0) return;
+        if (documentList !== null && documentList.length === 0) return;
         searchByFilterQuery(
             getPublicTagUrlParam(searchParams),
             getPrivateTagUrlParam(searchParams),
@@ -223,7 +224,7 @@ function SearchPage() {
             getYearUrlParam(searchParams),
             getQueryUrlParam(searchParams)
         );
-    }, [documentList.length, searchByFilterQuery, searchParams]);
+    }, [documentList, searchByFilterQuery, searchParams]);
 
     return (
         <div id="search-page" className="page">
@@ -469,13 +470,19 @@ function SearchPage() {
                     </button>
                 </div>
                 <div id="search-page-container">
-                    {shownDocumentList.map((data) => (
-                        <DocumentCard
-                            key={data.id}
-                            data={data}
-                            onClick={handleOpenResult}
-                        />
-                    ))}
+                    {documentList === null ? (
+                        <LoadingPanel size={60} speedMultiplier={0.6} />
+                    ) : shownDocumentList.length === 0 ? (
+                        <p>No Documents Found</p>
+                    ) : (
+                        shownDocumentList.map((data) => (
+                            <DocumentCard
+                                key={data.id}
+                                data={data}
+                                onClick={handleOpenResult}
+                            />
+                        ))
+                    )}
                 </div>
             </div>
         </div>
