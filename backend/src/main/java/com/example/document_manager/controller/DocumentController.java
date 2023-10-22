@@ -37,7 +37,7 @@ public class DocumentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/records")
+    @PostMapping("/records")
     public ResponseEntity<List<DocumentResponse>> getAllInList(@RequestBody DocumentListFetchRequest request) {
         request.validate();
         List<DocumentData> documentDataList = documentDataService.getAll(request.documentIdList());
