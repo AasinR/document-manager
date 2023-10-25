@@ -8,13 +8,147 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 }
 
-#document-main-container > h1 {
+#document-data-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 1px solid #808080;
+}
+
+#document-data-header > h1 {
     padding: 0.5rem;
     font-size: 1.5em;
+}
+
+#document-save-buttons {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+#document-save-buttons > button,
+#document-save-group {
+    min-width: 70px;
+    height: 30px;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#document-save-buttons > button:hover,
+#document-save-group:hover {
+    color: #dddddd;
+}
+#document-save-buttons > button:active,
+#document-save-group:active,
+#document-save-group.selected {
+    color: #ffffff;
+}
+#document-save-buttons > button.saved {
+    color: #006f6f;
+    border: 1px solid #008b8b;
+}
+#document-save-buttons > button.saved:hover {
+    color: #007d7d;
+}
+#document-save-buttons > button.saved:active {
+    color: #008b8b;
+}
+
+#document-save-group-container {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+}
+
+#document-save-group-header {
+    padding: 0.3rem;
     border-bottom: 1px solid #808080;
+}
+
+#document-save-group-header > input {
+    width: 100%;
+    padding: 0.3rem;
+    font-size: 0.8em;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+#document-save-group-list {
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+#document-save-group-list::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    border-left: 1px solid #808080;
+}
+#document-save-group-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+#document-save-group-list::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#document-save-group-list > p:first-child {
+    padding: 0.5rem;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+#document-save-group-list > button {
+    min-height: 30px;
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8em;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #808080;
+}
+#document-save-group-list > button:last-child {
+    border: none;
+}
+#document-save-group-list > button:hover {
+    color: #dddddd;
+}
+#document-save-group-list > button.selected {
+    color: #ffffff;
+}
+
+#document-save-group-list > button > p {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#document-save-group-list > button > p:nth-child(1) {
+    width: 100%;
+    padding: 0 0.3rem;
+    justify-content: left;
+}
+
+#document-save-group-list > button > p:nth-child(2) {
+    aspect-ratio: 1 / 1;
+    height: 70%;
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
 #document-data-container {

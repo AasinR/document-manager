@@ -71,6 +71,12 @@ declare global {
         type: CommentType;
         groupId?: string;
     }
+
+    interface GroupSaveOption {
+        groupId: string;
+        name: string;
+        saveId: string | null;
+    }
 }
 
 export {};

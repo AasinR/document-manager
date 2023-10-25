@@ -21,7 +21,10 @@ function DocumentCard({
             className={`document-card ${className}`}
             onClick={handleCardClick}
         >
-            <h1>{data.metadata.title}</h1>
+            <div className="document-card-header">
+                <h1>{data.metadata.title}</h1>
+                {data.tagCollection.privateTagCollection && <p>Saved</p>}
+            </div>
             <p>{data.metadata.authorList.join(", ")}</p>
         </div>
     );

@@ -98,5 +98,12 @@ declare global {
         content: string;
         timestamp: string;
     }
+
+    interface SavedDocument {
+        id: string;
+        ownerId: string;
+        documentId: string;
+        tagList: Tag[];
+    }
 }
 export {};
