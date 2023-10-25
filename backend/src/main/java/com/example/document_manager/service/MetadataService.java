@@ -10,8 +10,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +41,11 @@ public class MetadataService {
     public Optional<DocumentData> add(DocumentData documentData, MetadataRequest data, String username) {
         Metadata metadata = documentData.getMetadata();
         metadata.setTitle(data.title());
-        metadata.setAuthorList(data.authorList());
+        metadata.setAuthorList(Objects.requireNonNullElseGet(data.authorList(), ArrayList::new));
         metadata.setDescription(data.description());
         metadata.setPublicationDate(data.publicationDate());
-        metadata.setIdentifierList(data.identifierList());
-        metadata.setOtherData(data.otherData());
+        metadata.setIdentifierList(Objects.requireNonNullElseGet(data.identifierList(), HashMap::new));
+        metadata.setOtherData(Objects.requireNonNullElseGet(data.otherData(), HashMap::new));
        try {
             return Optional.of(save(documentData, username));
         }

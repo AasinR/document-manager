@@ -1,9 +1,13 @@
 import "./DocumentCard.css";
 
 function DocumentCard({
+    id,
+    className,
     data,
     onClick,
 }: {
+    id: string;
+    className: string;
     data: DocumentResponse;
     onClick: (data: DocumentResponse) => void;
 }) {
@@ -12,14 +16,23 @@ function DocumentCard({
     };
 
     return (
-        <div className="document-card" onClick={handleCardClick}>
-            <h1>{data.metadata.title}</h1>
+        <div
+            id={id}
+            className={`document-card ${className}`}
+            onClick={handleCardClick}
+        >
+            <div className="document-card-header">
+                <h1>{data.metadata.title}</h1>
+                {data.tagCollection.privateTagCollection && <p>Saved</p>}
+            </div>
             <p>{data.metadata.authorList.join(", ")}</p>
         </div>
     );
 }
 
 DocumentCard.defaultProps = {
+    id: "",
+    className: "",
     onClick: () => {},
 };
 

@@ -37,7 +37,7 @@ public class DocumentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/records")
+    @PostMapping("/records")
     public ResponseEntity<List<DocumentResponse>> getAllInList(@RequestBody DocumentListFetchRequest request) {
         request.validate();
         List<DocumentData> documentDataList = documentDataService.getAll(request.documentIdList());
@@ -87,31 +87,31 @@ public class DocumentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private Set<Tag> getPrivateTagSet(String documentId, List<SavedDocument> savedDocumentList) {
+    private PrivateTagCollection getPrivateTagSet(String documentId, List<SavedDocument> savedDocumentList) {
         return savedDocumentList.stream()
                 .filter(document -> Objects.equals(document.getDocumentId(), documentId))
                 .findFirst()
-                .map(SavedDocument::getTagList)
-                .orElse(new HashSet<>());
+                .map(document -> new PrivateTagCollection(document.getId(), document.getTagList()))
+                .orElse(null);
     }
 
-    private Set<Tag> getPrivateTagSet(String documentId, String username) {
+    private PrivateTagCollection getPrivateTagSet(String documentId, String username) {
         return savedDocumentService.getByOwnerIdAndDocumentId(username, documentId)
-                .map(SavedDocument::getTagList)
-                .orElse(new HashSet<>());
+                .map(document -> new PrivateTagCollection(document.getId(), document.getTagList()))
+                .orElse(null);
     }
 
     private List<GroupTagCollection> getGroupTagCollectionList(String documentId, List<SavedDocument> savedDocumentList) {
         return savedDocumentList.stream()
                 .filter(document -> Objects.equals(document.getDocumentId(), documentId))
-                .map(document -> new GroupTagCollection(document.getOwnerId(), document.getTagList()))
+                .map(document -> new GroupTagCollection(document.getOwnerId(), document.getId(), document.getTagList()))
                 .collect(Collectors.toList());
     }
 
     private List<GroupTagCollection> getGroupTagCollectionList(List<String> groupIdList, String documentId) {
         return savedDocumentService.getAllByDocumentIdAndOwnerIdList(documentId, groupIdList)
                 .stream()
-                .map(document -> new GroupTagCollection(document.getOwnerId(), document.getTagList()))
+                .map(document -> new GroupTagCollection(document.getOwnerId(), document.getId(), document.getTagList()))
                 .collect(Collectors.toList());
     }
 

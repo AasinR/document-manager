@@ -29,9 +29,10 @@ function SearchFilter({
     };
 
     return (
-        <div id={id} className={`search-filter ${className}`}>
+        <div className="search-filter">
             <button
-                className={`search-filter-button ${
+                id={id}
+                className={`search-filter-button ${className} ${
                     active || showAsActive ? "selected" : ""
                 }`}
                 onClick={handleButton}

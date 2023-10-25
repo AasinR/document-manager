@@ -7,7 +7,9 @@ import {
 } from "../utils/search";
 
 function useDocumentSearch() {
-    const [documentList, setDocumentList] = useState<DocumentResponse[]>([]);
+    const [documentList, setDocumentList] = useState<DocumentResponse[] | null>(
+        null
+    );
     const [shownDocumentList, setShownDocumentList] = useState<
         DocumentResponse[]
     >([]);
@@ -32,6 +34,7 @@ function useDocumentSearch() {
             yearFilter: YearFilterValue, // TODO: filter after backend change
             query: string
         ) => {
+            if (documentList === null) return;
             const queryString = query.toLowerCase();
 
             const result = documentList.filter((data) => {
@@ -39,7 +42,8 @@ function useDocumentSearch() {
                     matchTags(publicTagIdList, data.tagCollection.tagList) &&
                     matchTags(
                         privateTagIdList,
-                        data.tagCollection.privateTagList
+                        data.tagCollection.privateTagCollection
+                            ?.privateTagList ?? []
                     ) &&
                     matchGroupTags(
                         groupTagIdList,

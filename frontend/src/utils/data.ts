@@ -20,3 +20,15 @@ export enum YearFilterType {
     EXACT = "EXACT",
     RANGE = "RANGE",
 }
+
+export enum DocumentInfoType {
+    NONE = "NONE",
+    COMMENT = "COMMENT",
+    RELATED = "RELATED",
+}
+
+export enum CommentType {
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE",
+    GROUP = "GROUP",
+}

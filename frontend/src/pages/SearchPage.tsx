@@ -11,6 +11,7 @@ import {
     useAuth,
     useAuthorFilter,
     useDocumentSearch,
+    useFetchGroupList,
     useLabelFilter,
     useYearFilter,
 } from "../hooks";
@@ -65,8 +66,8 @@ function SearchPage() {
         updateYearToValue,
         resetYearFilter,
     } = useYearFilter(searchParams);
+    const { groupList, fetchGroupList } = useFetchGroupList();
 
-    const [groupList, setGroupList] = useState<Group[] | null>(null);
     const [activeLabel, setActiveLabel] = useState<ActiveLabelType | null>(
         null
     );
@@ -89,7 +90,7 @@ function SearchPage() {
     };
 
     const handleOpenResult = (data: DocumentResponse) => {
-        console.log(`clicked on result: ${data.id}`);
+        navigate(`/document/${data.id}`);
     };
 
     const handleLabelFilterSelect = () => {
@@ -117,21 +118,8 @@ function SearchPage() {
         return labelTypeToText[activeLabel.type] || "";
     };
 
-    const fetchGroupList = () => {
-        if (groupList !== null) return;
-        axios
-            .get(
-                `${process.env.REACT_APP_API_URL}/groups/all/${auth!.username}`
-            )
-            .then((response) => {
-                setGroupList(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
-
     const handleAuthorFilterSelect = () => {
+        if (documentList === null) return;
         setAuthorSearchValue("");
         fetchAuthorList(documentList);
     };
@@ -227,7 +215,7 @@ function SearchPage() {
 
     // set search value
     useEffect(() => {
-        if (documentList.length === 0) return;
+        if (documentList !== null && documentList.length === 0) return;
         searchByFilterQuery(
             getPublicTagUrlParam(searchParams),
             getPrivateTagUrlParam(searchParams),
@@ -236,7 +224,7 @@ function SearchPage() {
             getYearUrlParam(searchParams),
             getQueryUrlParam(searchParams)
         );
-    }, [documentList.length, searchByFilterQuery, searchParams]);
+    }, [documentList, searchByFilterQuery, searchParams]);
 
     return (
         <div id="search-page" className="page">
@@ -296,7 +284,9 @@ function SearchPage() {
                                 </button>
                                 <SearchFilter
                                     title="Group"
-                                    onClick={fetchGroupList}
+                                    onClick={() =>
+                                        fetchGroupList(auth!.username)
+                                    }
                                     containerId="search-page-group-select-container"
                                     showAsActive={
                                         activeLabel?.type === LabelType.GROUP
@@ -480,13 +470,19 @@ function SearchPage() {
                     </button>
                 </div>
                 <div id="search-page-container">
-                    {shownDocumentList.map((data) => (
-                        <DocumentCard
-                            key={data.id}
-                            data={data}
-                            onClick={handleOpenResult}
-                        />
-                    ))}
+                    {documentList === null ? (
+                        <LoadingPanel size={60} speedMultiplier={0.6} />
+                    ) : shownDocumentList.length === 0 ? (
+                        <p>No Documents Found</p>
+                    ) : (
+                        shownDocumentList.map((data) => (
+                            <DocumentCard
+                                key={data.id}
+                                data={data}
+                                onClick={handleOpenResult}
+                            />
+                        ))
+                    )}
                 </div>
             </div>
         </div>

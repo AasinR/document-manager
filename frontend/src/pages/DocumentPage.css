@@ -1,0 +1,290 @@
+#document-page {
+    display: flex;
+    justify-content: center;
+}
+
+#document-main-container {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#document-data-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 1px solid #808080;
+}
+
+#document-data-header > h1 {
+    padding: 0.5rem;
+    font-size: 1.5em;
+}
+
+#document-save-buttons {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+#document-save-buttons > button,
+#document-save-group {
+    min-width: 70px;
+    height: 30px;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#document-save-buttons > button:hover,
+#document-save-group:hover {
+    color: #dddddd;
+}
+#document-save-buttons > button:active,
+#document-save-group:active,
+#document-save-group.selected {
+    color: #ffffff;
+}
+#document-save-buttons > button.saved {
+    color: #006f6f;
+    border: 1px solid #008b8b;
+}
+#document-save-buttons > button.saved:hover {
+    color: #007d7d;
+}
+#document-save-buttons > button.saved:active {
+    color: #008b8b;
+}
+
+#document-save-group-container {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+}
+
+#document-save-group-header {
+    padding: 0.3rem;
+    border-bottom: 1px solid #808080;
+}
+
+#document-save-group-header > input {
+    width: 100%;
+    padding: 0.3rem;
+    font-size: 0.8em;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+#document-save-group-list {
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+#document-save-group-list::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    border-left: 1px solid #808080;
+}
+#document-save-group-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+#document-save-group-list::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#document-save-group-list > p:first-child {
+    padding: 0.5rem;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+#document-save-group-list > button {
+    min-height: 30px;
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8em;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #808080;
+}
+#document-save-group-list > button:last-child {
+    border: none;
+}
+#document-save-group-list > button:hover {
+    color: #dddddd;
+}
+#document-save-group-list > button.selected {
+    color: #ffffff;
+}
+
+#document-save-group-list > button > p {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#document-save-group-list > button > p:nth-child(1) {
+    width: 100%;
+    padding: 0 0.3rem;
+    justify-content: left;
+}
+
+#document-save-group-list > button > p:nth-child(2) {
+    aspect-ratio: 1 / 1;
+    height: 70%;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#document-data-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: hidden;
+    border-bottom: 1px solid #808080;
+}
+
+#document-metadata-panel {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#document-metadata-panel > div:last-child {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    border-top: 1px solid #808080;
+}
+
+#document-metadata-container {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: auto;
+}
+#document-metadata-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#document-metadata-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+#document-metadata-container::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+.document-data-option {
+    display: flex;
+    flex-direction: column;
+}
+
+.document-data-option > p:first-child {
+    padding-bottom: 0.5rem;
+    font-weight: bold;
+    border-bottom: 1px solid #808080;
+}
+
+.document-data-option > p:last-child {
+    padding: 0.5rem 0;
+    text-align: justify;
+}
+
+.document-data-option-key-value {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.document-data-option-key-value:last-child {
+    border-bottom: 1px solid #808080;
+}
+
+.document-data-option-key-value > p:first-child {
+    font-weight: bold;
+}
+
+#document-metadata-button {
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+#document-metadata-button:hover {
+    color: #dddddd;
+}
+
+#document-tag-container {
+    width: 40%;
+    padding: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: auto;
+    border-left: 1px solid #808080;
+}
+#document-tag-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#document-tag-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+#document-tag-container::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#document-modify-date {
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+#document-other-select {
+    padding: 0.5rem 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#document-other-select > button {
+    width: 200px;
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#document-other-select > button:hover {
+    color: #dddddd;
+}
+#document-other-select > button:active,
+#document-other-select > button.selected {
+    color: #ffffff;
+}
+
+#document-other-container {
+    min-height: 60%;
+    border-top: 1px solid #808080;
+}
