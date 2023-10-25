@@ -1,9 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CommentPanel, RelatedDocumentPanel } from "../components";
+import {
+    CommentPanel,
+    LabelListPanel,
+    RelatedDocumentPanel,
+} from "../components";
 import { useAuth, useFetchGroupList } from "../hooks";
-import { CommentType, DocumentInfoType } from "../utils/data";
+import { CommentType, DocumentInfoType, LabelType } from "../utils/data";
 import LoadingPage from "./LoadingPage";
 import ErrorPage from "./ErrorPage";
 import "./DocumentPage.css";
@@ -77,6 +81,37 @@ function DocumentPage() {
         setDocumentData(newState);
     };
 
+    const handleSetTagList = (
+        list: Tag[],
+        type: LabelType,
+        groupId: string
+    ) => {
+        if (documentData === null) return;
+        const newState: DocumentResponse = JSON.parse(
+            JSON.stringify(documentData)
+        );
+        switch (type) {
+            case LabelType.PUBLIC:
+                newState.tagCollection.tagList = list;
+                break;
+            case LabelType.PRIVATE:
+                newState.tagCollection.privateTagCollection!.privateTagList =
+                    list;
+                break;
+            case LabelType.GROUP:
+                const group =
+                    newState.tagCollection.groupTagCollectionList.find(
+                        (value) => value.groupId === groupId
+                    );
+                if (group === undefined) return;
+                group.groupTagList = list;
+                break;
+            default:
+                return;
+        }
+        setDocumentData(newState);
+    };
+
     const renderIdentifierList = () => {
         const identifierList = Object.entries(
             documentData!.metadata.identifierList
@@ -86,34 +121,6 @@ function DocumentPage() {
             <div key={key} className="document-data-option-key-value">
                 <p>{key}:</p>
                 <p>{value}</p>
-            </div>
-        ));
-    };
-
-    const renderLabelList = (list?: Tag[] | null) => {
-        if (list == null || list.length === 0) return <p>No Labels Found</p>;
-        return (
-            <div className="document-tag-option-list">
-                {list.map((tag) => (
-                    <p key={tag.id}>{tag.name}</p>
-                ))}
-            </div>
-        );
-    };
-
-    const renderGroupLabelList = (collections?: GroupTagCollection[]) => {
-        if (collections == null || collections.length === 0) {
-            return <p>No Labels Found</p>;
-        }
-        return collections.map((group) => (
-            <div key={group.groupId} className="document-tag-option">
-                <p>
-                    {
-                        groupList?.find((value) => value.id === group.groupId)
-                            ?.name
-                    }
-                </p>
-                {renderLabelList(group.groupTagList)}
             </div>
         ));
     };
@@ -218,25 +225,48 @@ function DocumentPage() {
                         </div>
                     </div>
                     <div id="document-tag-container">
-                        <div className="document-tag-option">
-                            <p>Public Labels</p>
-                            {renderLabelList(
-                                documentData.tagCollection.tagList
-                            )}
-                        </div>
-                        <div className="document-tag-option">
-                            <p>Private Labels</p>
-                            {renderLabelList(
-                                documentData.tagCollection.privateTagList
-                            )}
-                        </div>
-                        <div className="document-tag-option">
-                            <p>Group Labels</p>
-                            {renderGroupLabelList(
-                                documentData.tagCollection
-                                    .groupTagCollectionList
-                            )}
-                        </div>
+                        <LabelListPanel
+                            title="Public Labels"
+                            labelType={LabelType.PUBLIC}
+                            tagList={documentData.tagCollection.tagList}
+                            documentId={id!}
+                            updateTagList={handleSetTagList}
+                        />
+                        {documentData.tagCollection.privateTagCollection && (
+                            <LabelListPanel
+                                title="Private Labels"
+                                labelType={LabelType.PRIVATE}
+                                tagList={
+                                    documentData.tagCollection
+                                        .privateTagCollection.privateTagList
+                                }
+                                documentId={id!}
+                                saveId={
+                                    documentData.tagCollection
+                                        .privateTagCollection.saveId
+                                }
+                                updateTagList={handleSetTagList}
+                            />
+                        )}
+                        {documentData.tagCollection.groupTagCollectionList.map(
+                            (collection) => (
+                                <LabelListPanel
+                                    key={collection.groupId}
+                                    title={
+                                        groupList?.find(
+                                            (group) =>
+                                                group.id === collection.groupId
+                                        )?.name!
+                                    }
+                                    labelType={LabelType.GROUP}
+                                    groupId={collection.groupId}
+                                    tagList={collection.groupTagList}
+                                    documentId={id!}
+                                    saveId={collection.saveId}
+                                    updateTagList={handleSetTagList}
+                                />
+                            )
+                        )}
                     </div>
                 </div>
                 <div id="document-other-select">

@@ -66,14 +66,20 @@ declare global {
         ownerId: string | null;
     }
 
+    interface PrivateTagCollection {
+        saveId: string;
+        privateTagList: Tag[];
+    }
+
     interface GroupTagCollection {
         groupId: string;
+        saveId: string;
         groupTagList: Tag[];
     }
 
     interface DocumentTagCollection {
         tagList: Tag[];
-        privateTagList: Tag[];
+        privateTagCollection: PrivateTagCollection | null;
         groupTagCollectionList: GroupTagCollection[];
     }
 

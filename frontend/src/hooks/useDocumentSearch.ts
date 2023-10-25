@@ -42,7 +42,8 @@ function useDocumentSearch() {
                     matchTags(publicTagIdList, data.tagCollection.tagList) &&
                     matchTags(
                         privateTagIdList,
-                        data.tagCollection.privateTagList
+                        data.tagCollection.privateTagCollection
+                            ?.privateTagList ?? []
                     ) &&
                     matchGroupTags(
                         groupTagIdList,
