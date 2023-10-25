@@ -7,7 +7,7 @@ import java.util.Set;
 
 public record DocumentTagCollection(
         Set<Tag> tagList,
-        Set<Tag> privateTagList,
+        PrivateTagCollection privateTagCollection,
         List<GroupTagCollection> groupTagCollectionList
 ) {
 }
