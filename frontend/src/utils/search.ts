@@ -30,6 +30,21 @@ export function matchAuthorFilter(
     );
 }
 
+export function matchYearFilter(
+    filter: YearFilterValue,
+    target: string | null
+): boolean {
+    if (target === null) return Object.keys(filter).length === 0;
+    const year = new Date(target).getFullYear();
+    if (filter.exact !== undefined) {
+        return year === filter.exact;
+    }
+    return (
+        (filter.from == null || year >= filter.from) &&
+        (filter.to == null || year <= filter.to)
+    );
+}
+
 export function matchQuerySting(
     data: DocumentResponse,
     query: string

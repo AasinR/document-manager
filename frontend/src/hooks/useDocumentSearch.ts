@@ -4,6 +4,7 @@ import {
     matchGroupTags,
     matchQuerySting,
     matchTags,
+    matchYearFilter,
 } from "../utils/search";
 
 function useDocumentSearch() {
@@ -31,7 +32,7 @@ function useDocumentSearch() {
             privateTagIdList: string[],
             groupTagIdList: GroupTagIdValue[],
             authorList: string[],
-            yearFilter: YearFilterValue, // TODO: filter after backend change
+            yearFilter: YearFilterValue,
             query: string
         ) => {
             if (documentList === null) return;
@@ -50,6 +51,10 @@ function useDocumentSearch() {
                         data.tagCollection.groupTagCollectionList
                     ) &&
                     matchAuthorFilter(authorList, data.metadata.authorList) &&
+                    matchYearFilter(
+                        yearFilter,
+                        data.metadata.publicationDate
+                    ) &&
                     matchQuerySting(data, queryString)
                 );
             });
