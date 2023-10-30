@@ -14,6 +14,7 @@ import {
     SearchPage,
     DocumentPage,
     MetadataPage,
+    DocumentViewPage,
 } from "./pages";
 import "./App.css";
 
@@ -37,6 +38,10 @@ function App() {
                                     <Route
                                         path="metadata"
                                         element={<MetadataPage />}
+                                    />
+                                    <Route
+                                        path="view"
+                                        element={<DocumentViewPage />}
                                     />
                                 </Route>
                                 <Route path="" element={<ErrorPage />} />

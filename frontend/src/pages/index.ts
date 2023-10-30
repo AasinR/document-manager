@@ -1,3 +1,4 @@
+export { default as DocumentViewPage } from "./DocumentViewPage";
 export { default as DocumentPage } from "./DocumentPage";
 export { default as MetadataPage } from "./MetadataPage";
 export { default as AccountPage } from "./AccountPage";

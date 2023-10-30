@@ -224,16 +224,27 @@
     font-weight: bold;
 }
 
-#document-metadata-button {
+#document-metadata-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#document-metadata-buttons > button {
+    min-width: 100px;
+    max-height: 35px;
     padding: 0.5rem;
     color: #808080;
     background-color: #202020;
     outline: none;
     border: 1px solid #808080;
 }
-
-#document-metadata-button:hover {
+#document-metadata-buttons > button:hover {
     color: #dddddd;
+}
+#document-metadata-buttons > button:active {
+    color: #ffffff;
 }
 
 #document-tag-container {
