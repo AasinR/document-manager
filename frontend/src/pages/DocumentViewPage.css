@@ -1,0 +1,9 @@
+#view-page {
+    display: flex;
+    flex-direction: column;
+}
+
+#view-object {
+    width: 100%;
+    height: 100%;
+}

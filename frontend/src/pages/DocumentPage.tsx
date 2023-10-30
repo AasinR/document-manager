@@ -10,10 +10,10 @@ import {
 } from "../components";
 import { useAuth, useFetchGroupList } from "../hooks";
 import { CommentType, DocumentInfoType, LabelType } from "../utils/data";
+import { changeStateListValue } from "../utils/util";
 import LoadingPage from "./LoadingPage";
 import ErrorPage from "./ErrorPage";
 import "./DocumentPage.css";
-import { changeStateListValue } from "../utils/util";
 
 function DocumentPage() {
     const { id } = useParams();
@@ -173,6 +173,35 @@ function DocumentPage() {
 
     const handleEditMetadata = () => {
         navigate(`${pathname}/metadata`);
+    };
+
+    const handleView = () => {
+        navigate(`${pathname}/view`);
+    };
+
+    const handleDownload = async () => {
+        if (documentData === null) return;
+        let blob = null;
+        await axios
+            .get(
+                `${process.env.REACT_APP_API_URL}/files/get/${documentData.fileId}`,
+                { responseType: "arraybuffer" }
+            )
+            .then((response) => {
+                blob = new Blob([response.data], {
+                    type: response.headers["content-type"],
+                });
+            })
+            .catch((error) => {
+                console.log(error.response.data);
+            });
+        if (blob === null) return;
+        const url = URL.createObjectURL(blob);
+        const element = document.createElement("a");
+        element.href = url;
+        element.download = documentData.metadata.title;
+        element.click();
+        URL.revokeObjectURL(url);
     };
 
     const handleOpenComments = () => {
@@ -405,12 +434,25 @@ function DocumentPage() {
                             </div>
                         </div>
                         <div>
-                            <button
-                                id="document-metadata-button"
-                                onClick={handleEditMetadata}
-                            >
-                                Edit Metadata
-                            </button>
+                            <div id="document-metadata-buttons">
+                                <button
+                                    id="document-metadata-button"
+                                    onClick={handleEditMetadata}
+                                >
+                                    Edit Metadata
+                                </button>
+                                <button onClick={handleView}>
+                                    View Document
+                                </button>
+                                <SpinnerButton
+                                    onClick={handleDownload}
+                                    spinnerColor="#808080"
+                                    spinnerSize={10}
+                                    speedMultiplier={0.6}
+                                >
+                                    Download
+                                </SpinnerButton>
+                            </div>
                             <p id="document-modify-date">
                                 {getTimestampString()}
                             </p>
