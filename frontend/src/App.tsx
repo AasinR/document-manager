@@ -15,6 +15,7 @@ import {
     DocumentPage,
     MetadataPage,
     DocumentViewPage,
+    LabelPage,
 } from "./pages";
 import "./App.css";
 
@@ -46,6 +47,7 @@ function App() {
                                 </Route>
                                 <Route path="" element={<ErrorPage />} />
                             </Route>
+                            <Route path="label" element={<LabelPage />} />
                             <Route
                                 path="settings"
                                 element={<SettingsSidebar />}

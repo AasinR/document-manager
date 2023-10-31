@@ -1,0 +1,274 @@
+#label-page {
+    display: flex;
+    justify-content: center;
+}
+
+#label-page-mid {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#label-page-select-panel {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: 1px solid #808080;
+}
+
+#label-page-select-panel > p {
+    text-align: center;
+    font-size: 0.9em;
+    color: #808080;
+}
+
+#label-page-search {
+    width: 100%;
+}
+
+#label-page-select {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+#label-page-select > button,
+#label-page-select-group {
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#label-page-select > button:hover,
+#label-page-select-group:hover {
+    color: #dddddd;
+}
+#label-page-select > button:active,
+#label-page-select > button.selected,
+#label-page-select-group:active,
+#label-page-select-group.selected {
+    color: #ffffff;
+}
+
+#label-page-group-select {
+    width: 240px;
+}
+
+#label-page-group-header {
+    padding: 0.5rem;
+    border-bottom: 1px solid #808080;
+}
+
+#label-page-group-header > input {
+    width: 100%;
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+#label-page-group-list {
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+#label-page-group-list::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#label-page-group-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+#label-page-group-list::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#label-page-group-list > p {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+#label-page-group-list > button {
+    min-height: 35px;
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #808080;
+}
+#label-page-group-list > button:last-child {
+    border: none;
+}
+#label-page-group-list > button:hover {
+    color: #dddddd;
+}
+#label-page-group-list > button:active,
+#label-page-group-list > button.selected {
+    color: #ffffff;
+}
+
+#label-page-group-list > button > p {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#label-page-group-list > button > p:nth-child(1) {
+    width: 100%;
+    padding: 0 0.5rem;
+    justify-content: left;
+}
+#label-page-group-list > button > p:nth-child(2) {
+    aspect-ratio: 1 / 1;
+    height: 70%;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#label-page-new-panel {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #808080;
+}
+
+#label-page-new-panel > p {
+    text-align: center;
+    font-size: 0.9em;
+    color: #b60808;
+}
+
+#label-page-add-new {
+    width: 100%;
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#label-page-add-new:hover {
+    color: #dddddd;
+}
+#label-page-add-new:active {
+    color: #ffffff;
+}
+
+#label-page-new-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+#label-page-new-container > input {
+    width: 100%;
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+#label-page-new-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#label-page-new-buttons > button {
+    min-width: 50px;
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#label-page-new-buttons > button:hover {
+    color: #dddddd;
+}
+#label-page-new-buttons > button:active {
+    color: #ffffff;
+}
+
+#label-page-list {
+    height: 100%;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+#label-page-list::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#label-page-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+#label-page-list::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#label-page-list > p:first-child {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.label-page-option {
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid #808080;
+}
+.label-page-option.editing {
+    border: 1px solid #008b8b;
+    outline: 2px solid #008b8b;
+}
+
+.label-page-option > input {
+    width: 100%;
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.label-page-option > div {
+    display: flex;
+    flex-direction: row;
+}
+
+.label-page-option-button {
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-left: 1px solid #808080;
+}
+.label-page-option-button > img {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    filter: invert(40%);
+}
+.label-page-option-button > img:hover {
+    filter: invert(80%);
+}
