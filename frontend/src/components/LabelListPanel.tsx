@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LabelType } from "../utils/data";
 import { changeStateListValue } from "../utils/util";
 import LoadingPanel from "./LoadingPanel";
@@ -27,6 +28,8 @@ function LabelListPanel({
     saveId: string;
     updateTagList: (list: Tag[], type: LabelType, groupId: string) => void;
 }) {
+    const navigate = useNavigate();
+
     const [editing, setEditing] = useState<boolean>(false);
     const [optionList, setOptionList] = useState<LabelOption[] | null>(null);
     const [shownList, setShownList] = useState<LabelOption[]>([]);
@@ -126,6 +129,10 @@ function LabelListPanel({
         setShownList(result);
     };
 
+    const handleLabelNav = () => {
+        navigate(`/label?type=${labelType}${groupId ? `&id=${groupId}` : ""}`);
+    };
+
     return (
         <div id={id} className={`label-list-panel ${className}`}>
             <div className="label-list-header">
@@ -173,9 +180,7 @@ function LabelListPanel({
                         </div>
                         <button
                             className="label-list-dropdown-edit"
-                            onClick={() => {
-                                // TODO: handle label editing
-                            }}
+                            onClick={handleLabelNav}
                         >
                             Edit Labels
                         </button>
