@@ -2,6 +2,7 @@ export { default as DocumentViewPage } from "./DocumentViewPage";
 export { default as DocumentPage } from "./DocumentPage";
 export { default as MetadataPage } from "./MetadataPage";
 export { default as AccountPage } from "./AccountPage";
+export { default as LibraryPage } from "./LibraryPage";
 export { default as LoadingPage } from "./LoadingPage";
 export { default as SearchPage } from "./SearchPage";
 export { default as ErrorPage } from "./ErrorPage";

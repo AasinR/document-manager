@@ -77,6 +77,11 @@ declare global {
         name: string;
         saveId: string | null;
     }
+
+    interface SavedDocumentData {
+        id: string;
+        document: DocumentResponse;
+    }
 }
 
 export {};
