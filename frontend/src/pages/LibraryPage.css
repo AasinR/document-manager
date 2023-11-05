@@ -1,0 +1,302 @@
+#lib-page {
+    display: flex;
+    justify-content: center;
+}
+
+#lib-mid {
+    width: 60%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #808080;
+}
+
+#lib-nav {
+    min-width: 200px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #202020;
+    border-right: 1px solid #808080;
+}
+#lib-nav::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#lib-nav::-webkit-scrollbar-track {
+    background: transparent;
+    border-left: 1px solid #808080;
+}
+#lib-nav::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#lib-nav > h1 {
+    padding: 0.5rem;
+    font-size: 1em;
+    text-align: center;
+    border-bottom: 1px solid #808080;
+}
+
+#lib-nav > h2 {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    font-size: 0.9em;
+    text-align: center;
+    border-bottom: 1px solid #808080;
+}
+
+#lib-nav > button {
+    padding: 0.5rem;
+    text-align: left;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #808080;
+}
+#lib-nav > button:hover {
+    background-color: #252525;
+}
+#lib-nav > button:active,
+#lib-nav > button.selected {
+    background-color: #303030;
+}
+
+#lib-container {
+    height: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#lib-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #202020;
+    border-bottom: 1px solid #808080;
+}
+
+#lib-header > h2 {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+}
+
+#lib-header-container {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#lib-header-container > * {
+    height: 35px;
+}
+
+#lib-header-container > button {
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+#lib-header-container > button:hover {
+    color: #dddddd;
+}
+#lib-header-container > button:active,
+#lib-header-container > button.selected {
+    color: #ffffff;
+}
+
+#lib-list {
+    flex-grow: 1;
+}
+#lib-list::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#lib-list::-webkit-scrollbar-track {
+    background: transparent;
+    border-left: 1px solid #808080;
+}
+#lib-list::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+#lib-list > p {
+    padding: 1rem;
+    text-align: center;
+}
+
+.lib-document {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-bottom: 1px solid #808080;
+}
+
+.lib-document-header {
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.lib-document-header > p:first-child {
+    font-weight: bold;
+}
+
+.lib-document-header > p:last-child {
+    min-height: 1rem;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.lib-document-button {
+    height: 35px;
+    aspect-ratio: 1 / 1;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+.lib-document-button > img {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    filter: invert(40%);
+}
+.lib-document-button > img:hover {
+    filter: invert(80%);
+}
+
+#lib-add {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#lib-add-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    border-bottom: 1px solid #808080;
+}
+#lib-add-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+#lib-add-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+#lib-add-container::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+
+.lib-add-data {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.lib-add-data > p {
+    padding-bottom: 0.5rem;
+    font-weight: bold;
+    font-size: 0.9em;
+    border-bottom: 1px solid #808080;
+}
+
+.lib-add-data input,
+.lib-add-data textarea {
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+.lib-add-data textarea {
+    min-height: 35px;
+    resize: vertical;
+}
+.lib-add-data textarea::-webkit-resizer {
+    display: none;
+}
+.lib-add-data textarea::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.lib-add-data textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+.lib-add-data textarea::-webkit-scrollbar-thumb {
+    background: #666666;
+}
+.lib-add-data textarea::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.lib-add-data-list {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.lib-add-data-list > input:first-of-type {
+    width: 30%;
+    min-width: 45px;
+    flex-grow: 1;
+}
+.lib-add-data-list > input:nth-of-type(2) {
+    flex-grow: 2;
+}
+
+#lib-add-buttons {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#lib-add-buttons > button {
+    height: 35px;
+    min-width: 80px;
+}
+
+.lib-add-button {
+    padding: 0.5rem;
+    color: #808080;
+    background-color: #202020;
+    outline: none;
+    border: 1px solid #808080;
+}
+.lib-add-button:hover {
+    color: #dddddd;
+}
+.lib-add-button:active {
+    color: #ffffff;
+}
+
+#lib-file-input {
+    display: none;
+}
+
+#lib-add-error {
+    padding-top: 0.5rem;
+    text-align: center;
+    font-size: 0.9em;
+    color: #b60808;
+}

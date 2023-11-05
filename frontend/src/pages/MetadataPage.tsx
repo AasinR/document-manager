@@ -9,6 +9,7 @@ import {
     matchStringArrays,
     removeStateListValue,
     updateStateListListValue,
+    validateMetadata,
 } from "../utils/util";
 import "./MetadataPage.css";
 import { SpinnerButton } from "../components";
@@ -69,71 +70,47 @@ function MetadataPage() {
         setIdentifierList(identifierDataList);
     };
 
-    const validateRecord = (
-        list: [string, string][],
-        name: string
-    ): Record<string, string> | null | undefined => {
-        let record: Record<string, string> = {};
-        for (const [key, value] of list) {
-            const keyTrim = key.trim();
-            const valueTrim = value.trim();
-            if (!keyTrim || !valueTrim) {
-                setErrorMessage(`Invalid ${name} key or value!`);
-                return;
-            }
-            if (record.hasOwnProperty(keyTrim)) {
-                setErrorMessage(`Duplicate ${name} key!`);
-                return;
-            }
-            record[keyTrim] = valueTrim;
-        }
-        if (Object.keys(record).length === 0) return null;
-        return record;
-    };
-
     const handleSave = async () => {
-        // validate values
-        const title = titleValue.trim();
-        if (!title) {
-            setErrorMessage("Title field cannot be empty!");
+        const metadata = validateMetadata(
+            titleValue,
+            authorList,
+            descriptionValue,
+            dateValue,
+            otherData,
+            identifierList
+        );
+        if (typeof metadata === "string") {
+            setErrorMessage(metadata);
             return;
         }
-        const authors = authorList
-            .map((author) => author.trim())
-            .filter(Boolean);
-        const description = descriptionValue.trim();
-        const otherValues = validateRecord(otherData, "Other Data");
-        if (otherValues === undefined) return;
-        const identifiers = validateRecord(identifierList, "Identifier");
-        if (identifiers === undefined) return;
-
-        const requestAuthor = authors.length > 0 ? authors : null;
-        const requestDescription = description ? description : null;
-        const requestDate = dateValue ? dateValue : null;
 
         if (
-            title === currentMetadata!.title &&
-            matchStringArrays(authors, currentMetadata!.authorList) &&
-            requestDescription === currentMetadata!.description &&
-            matchDateString(requestDate, currentMetadata!.publicationDate) &&
-            matchRecords(otherValues ?? {}, currentMetadata!.otherData) &&
-            matchRecords(identifiers ?? {}, currentMetadata!.identifierList)
+            metadata.title === currentMetadata!.title &&
+            matchStringArrays(
+                metadata.authorList ?? [],
+                currentMetadata!.authorList
+            ) &&
+            metadata.description === currentMetadata!.description &&
+            matchDateString(
+                metadata.publicationDate,
+                currentMetadata!.publicationDate
+            ) &&
+            matchRecords(
+                metadata.otherData ?? {},
+                currentMetadata!.otherData
+            ) &&
+            matchRecords(
+                metadata.identifierList ?? {},
+                currentMetadata!.identifierList
+            )
         ) {
             setErrorMessage("Metadata is identical to the current one!");
             return;
         }
-        const requestBody = {
-            title: title,
-            authorList: requestAuthor,
-            description: requestDescription,
-            publicationDate: requestDate,
-            identifierList: identifiers,
-            otherData: otherValues,
-        };
         await axios
             .post(
                 `${process.env.REACT_APP_API_URL}/documents/update/${id}`,
-                requestBody
+                metadata
             )
             .then(() => {
                 navigate(`/document/${id}`);

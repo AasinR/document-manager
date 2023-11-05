@@ -13,6 +13,7 @@ function Navbar() {
     const navList: NavItem[] = [
         { name: "Home", path: "/" },
         { name: "Search", path: "/search" },
+        { name: "Library", path: "/library" },
     ];
     const dropdownItemList: NavItem[] = [
         { name: "Settings", path: "/settings" },
