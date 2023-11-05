@@ -9,7 +9,7 @@ import {
     matchStringArrays,
     removeStateListValue,
     updateStateListListValue,
-    validateRecordList,
+    validateMetadata,
 } from "../utils/util";
 import "./MetadataPage.css";
 import { SpinnerButton } from "../components";
@@ -71,54 +71,46 @@ function MetadataPage() {
     };
 
     const handleSave = async () => {
-        // validate values
-        const title = titleValue.trim();
-        if (!title) {
-            setErrorMessage("Title field cannot be empty!");
+        const metadata = validateMetadata(
+            titleValue,
+            authorList,
+            descriptionValue,
+            dateValue,
+            otherData,
+            identifierList
+        );
+        if (typeof metadata === "string") {
+            setErrorMessage(metadata);
             return;
         }
-        const authors = authorList
-            .map((author) => author.trim())
-            .filter(Boolean);
-        const description = descriptionValue.trim();
-        const otherValues = validateRecordList(otherData, "Other Data");
-        if (typeof otherValues === "string") {
-            setErrorMessage(otherValues);
-            return;
-        }
-        const identifiers = validateRecordList(identifierList, "Identifier");
-        if (typeof identifiers === "string") {
-            setErrorMessage(identifiers);
-            return;
-        }
-
-        const requestAuthor = authors.length > 0 ? authors : null;
-        const requestDescription = description ? description : null;
-        const requestDate = dateValue ? dateValue : null;
 
         if (
-            title === currentMetadata!.title &&
-            matchStringArrays(authors, currentMetadata!.authorList) &&
-            requestDescription === currentMetadata!.description &&
-            matchDateString(requestDate, currentMetadata!.publicationDate) &&
-            matchRecords(otherValues ?? {}, currentMetadata!.otherData) &&
-            matchRecords(identifiers ?? {}, currentMetadata!.identifierList)
+            metadata.title === currentMetadata!.title &&
+            matchStringArrays(
+                metadata.authorList ?? [],
+                currentMetadata!.authorList
+            ) &&
+            metadata.description === currentMetadata!.description &&
+            matchDateString(
+                metadata.publicationDate,
+                currentMetadata!.publicationDate
+            ) &&
+            matchRecords(
+                metadata.otherData ?? {},
+                currentMetadata!.otherData
+            ) &&
+            matchRecords(
+                metadata.identifierList ?? {},
+                currentMetadata!.identifierList
+            )
         ) {
             setErrorMessage("Metadata is identical to the current one!");
             return;
         }
-        const requestBody = {
-            title: title,
-            authorList: requestAuthor,
-            description: requestDescription,
-            publicationDate: requestDate,
-            identifierList: identifiers,
-            otherData: otherValues,
-        };
         await axios
             .post(
                 `${process.env.REACT_APP_API_URL}/documents/update/${id}`,
-                requestBody
+                metadata
             )
             .then(() => {
                 navigate(`/document/${id}`);

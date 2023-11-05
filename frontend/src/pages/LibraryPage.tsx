@@ -13,7 +13,7 @@ import { matchQuerySting } from "../utils/search";
 import {
     removeStateListValue,
     updateStateListListValue,
-    validateRecordList,
+    validateMetadata,
 } from "../utils/util";
 import LoadingPage from "./LoadingPage";
 import deleteImage from "../assets/icons/delete.png";
@@ -190,26 +190,74 @@ function LibraryPage() {
     };
 
     const handleSaveNew = async () => {
-        // TODO
-        const title = titleValue.trim();
-        if (!title) {
-            setErrorMessage("Title field cannot be empty!");
+        if (documentList === null || shownList === null) return;
+        if (fileInput === null) {
+            setErrorMessage("File is missing!");
             return;
         }
-        const authors = authorList
-            .map((author) => author.trim())
-            .filter(Boolean);
-        const description = descriptionValue.trim();
-        const otherValues = validateRecordList(otherData, "Other Data");
-        if (typeof otherValues === "string") {
-            setErrorMessage(otherValues);
+        const metadata = validateMetadata(
+            titleValue,
+            authorList,
+            descriptionValue,
+            dateValue,
+            otherData,
+            identifierList
+        );
+        if (typeof metadata === "string") {
+            setErrorMessage(metadata);
             return;
         }
-        const identifiers = validateRecordList(identifierList, "Identifier");
-        if (typeof identifiers === "string") {
-            setErrorMessage(identifiers);
-            return;
-        }
+        const urlParam = activeId ? `?groupId=${activeId}` : "";
+        const metadataBlob = new Blob([JSON.stringify(metadata)], {
+            type: "application/json",
+        });
+        const formData = new FormData();
+        formData.append("file", fileInput);
+        formData.append("metadata", metadataBlob);
+        let documentId = "";
+        let saveId = "";
+        await axios
+            .post(
+                `${process.env.REACT_APP_API_URL}/saved/add${urlParam}`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            )
+            .then((response: AxiosResponse<SavedDocument>) => {
+                documentId = response.data.documentId;
+                saveId = response.data.id;
+            })
+            .catch((error) => {
+                console.log(error.response.data);
+                const apiError: ApiError | undefined = error.response?.data;
+                const message: string =
+                    apiError?.statusCode && apiError.statusCode < 500
+                        ? "Document with given file is already saved in the library!"
+                        : "Oops! Something went wrong on the server. Please try again later.";
+                setErrorMessage(message);
+            });
+        if (!documentId) return;
+        await axios
+            .get(`${process.env.REACT_APP_API_URL}/documents/get/${documentId}`)
+            .then((response: AxiosResponse<DocumentResponse>) => {
+                const newState = [
+                    ...documentList,
+                    {
+                        id: saveId,
+                        document: response.data,
+                    },
+                ];
+                setDocumentList(newState);
+                search(searchValue, newState);
+            })
+            .catch(() => {
+                setErrorMessage("Failed to fetch saved document!");
+            });
+        setEditing(false);
+        handleAddReset();
     };
 
     const getSelectedTitle = () => {
@@ -492,6 +540,9 @@ function LibraryPage() {
                                     </button>
                                 </div>
                             </div>
+                            {errorMessage && (
+                                <p id="lib-add-error">Error: {errorMessage}</p>
+                            )}
                             <div id="lib-add-buttons">
                                 <button
                                     className="lib-add-button"

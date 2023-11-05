@@ -293,3 +293,10 @@
 #lib-file-input {
     display: none;
 }
+
+#lib-add-error {
+    padding-top: 0.5rem;
+    text-align: center;
+    font-size: 0.9em;
+    color: #b60808;
+}

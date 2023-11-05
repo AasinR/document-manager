@@ -60,6 +60,15 @@ declare global {
         otherData: { [key: string]: string };
     }
 
+    interface MetadataRequest {
+        title: string;
+        authorList: string[] | null;
+        description: string | null;
+        publicationDate: string | null;
+        identifierList: Record<string, string> | null;
+        otherData: Record<string, string> | null;
+    }
+
     interface Tag {
         id: string;
         name: string;

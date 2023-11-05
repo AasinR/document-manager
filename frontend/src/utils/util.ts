@@ -94,3 +94,32 @@ export function validateRecordList(
     if (Object.keys(record).length === 0) return null;
     return record;
 }
+
+export function validateMetadata(
+    title: string,
+    authorList: string[],
+    description: string,
+    publicationDate: string,
+    otherData: [string, string][],
+    identifierList: [string, string][]
+): MetadataRequest | string {
+    const titleValue = title.trim();
+    if (!titleValue) return "Title field cannot be empty!";
+    const authors = authorList.map((author) => author.trim()).filter(Boolean);
+    const descriptionValue = description.trim();
+    const otherValues = validateRecordList(otherData, "Other Data");
+    if (typeof otherValues === "string") return otherValues;
+    const identifiers = validateRecordList(identifierList, "Identifier");
+    if (typeof identifiers === "string") return identifiers;
+    const requestAuthor = authors.length > 0 ? authors : null;
+    const requestDescription = descriptionValue ? descriptionValue : null;
+    const requestDate = publicationDate ? publicationDate : null;
+    return {
+        title: titleValue,
+        authorList: requestAuthor,
+        description: requestDescription,
+        publicationDate: requestDate,
+        identifierList: identifiers,
+        otherData: otherValues,
+    };
+}
