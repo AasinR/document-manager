@@ -75,3 +75,22 @@ export function resetLabelOptionList(list: LabelOption[]): LabelOption[] {
         selected: false,
     }));
 }
+
+export function validateRecordList(
+    list: [string, string][],
+    name: string
+): Record<string, string> | string | null {
+    let record: Record<string, string> = {};
+    for (const [key, value] of list) {
+        const keyTrim = key.trim();
+        const valueTrim = value.trim();
+        if (!keyTrim || !valueTrim) {
+            return `Invalid ${name} key or value!`;
+        } else if (record.hasOwnProperty(keyTrim)) {
+            return `Duplicate ${name} key!`;
+        }
+        record[keyTrim] = valueTrim;
+    }
+    if (Object.keys(record).length === 0) return null;
+    return record;
+}

@@ -9,6 +9,7 @@ import {
     matchStringArrays,
     removeStateListValue,
     updateStateListListValue,
+    validateRecordList,
 } from "../utils/util";
 import "./MetadataPage.css";
 import { SpinnerButton } from "../components";
@@ -69,28 +70,6 @@ function MetadataPage() {
         setIdentifierList(identifierDataList);
     };
 
-    const validateRecord = (
-        list: [string, string][],
-        name: string
-    ): Record<string, string> | null | undefined => {
-        let record: Record<string, string> = {};
-        for (const [key, value] of list) {
-            const keyTrim = key.trim();
-            const valueTrim = value.trim();
-            if (!keyTrim || !valueTrim) {
-                setErrorMessage(`Invalid ${name} key or value!`);
-                return;
-            }
-            if (record.hasOwnProperty(keyTrim)) {
-                setErrorMessage(`Duplicate ${name} key!`);
-                return;
-            }
-            record[keyTrim] = valueTrim;
-        }
-        if (Object.keys(record).length === 0) return null;
-        return record;
-    };
-
     const handleSave = async () => {
         // validate values
         const title = titleValue.trim();
@@ -102,10 +81,16 @@ function MetadataPage() {
             .map((author) => author.trim())
             .filter(Boolean);
         const description = descriptionValue.trim();
-        const otherValues = validateRecord(otherData, "Other Data");
-        if (otherValues === undefined) return;
-        const identifiers = validateRecord(identifierList, "Identifier");
-        if (identifiers === undefined) return;
+        const otherValues = validateRecordList(otherData, "Other Data");
+        if (typeof otherValues === "string") {
+            setErrorMessage(otherValues);
+            return;
+        }
+        const identifiers = validateRecordList(identifierList, "Identifier");
+        if (typeof identifiers === "string") {
+            setErrorMessage(identifiers);
+            return;
+        }
 
         const requestAuthor = authors.length > 0 ? authors : null;
         const requestDescription = description ? description : null;
