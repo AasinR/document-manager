@@ -17,6 +17,7 @@ import {
     DocumentViewPage,
     LabelPage,
     LibraryPage,
+    GroupPage,
 } from "./pages";
 import "./App.css";
 
@@ -50,6 +51,10 @@ function App() {
                             </Route>
                             <Route path="label" element={<LabelPage />} />
                             <Route path="library" element={<LibraryPage />} />
+                            <Route path="group">
+                                <Route path=":id" element={<GroupPage />} />
+                                <Route path="" element={<ErrorPage />} />
+                            </Route>
                             <Route
                                 path="settings"
                                 element={<SettingsSidebar />}

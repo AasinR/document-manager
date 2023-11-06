@@ -47,7 +47,17 @@
     border-bottom: 1px solid #808080;
 }
 
-#lib-nav > button {
+#lib-nav > div {
+    display: flex;
+    flex-direction: row;
+}
+
+#lib-nav > div > button:first-child {
+    flex-grow: 1;
+}
+
+#lib-nav button {
+    height: 35px;
     padding: 0.5rem;
     text-align: left;
     color: #ffffff;
@@ -56,12 +66,32 @@
     border: none;
     border-bottom: 1px solid #808080;
 }
-#lib-nav > button:hover {
+#lib-nav button:hover {
     background-color: #252525;
 }
-#lib-nav > button:active,
-#lib-nav > button.selected {
+#lib-nav button:active,
+#lib-nav button.selected {
     background-color: #303030;
+}
+
+.lib-nav-group-settings {
+    aspect-ratio: 1 / 1;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #808080;
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+.lib-nav-group-settings > img {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    filter: invert(40%);
+}
+.lib-nav-group-settings:hover > img {
+    filter: invert(80%);
 }
 
 #lib-container {

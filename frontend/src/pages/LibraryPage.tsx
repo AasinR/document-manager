@@ -17,6 +17,7 @@ import {
 } from "../utils/util";
 import LoadingPage from "./LoadingPage";
 import deleteImage from "../assets/icons/delete.png";
+import settingImage from "../assets/icons/setting.png";
 import "./LibraryPage.css";
 
 function LibraryPage() {
@@ -111,7 +112,7 @@ function LibraryPage() {
         (value: string, list?: SavedDocumentData[]) => {
             if (documentList === null) return;
             const searchList = list ? list : documentList;
-            const searchString = value.trim();
+            const searchString = value.toLowerCase();
             const result = searchList.filter((data) =>
                 matchQuerySting(data.document, searchString)
             );
@@ -260,6 +261,10 @@ function LibraryPage() {
         handleAddReset();
     };
 
+    const handleGroupSettings = (groupId: string) => {
+        navigate(`/group/${groupId}`);
+    };
+
     const getSelectedTitle = () => {
         if (!activeId) return "Personal Library";
         const group = groupList?.find((value) => value.id === activeId);
@@ -284,13 +289,24 @@ function LibraryPage() {
                     </button>
                     <h2>Group</h2>
                     {groupList?.map((group) => (
-                        <button
-                            key={group.id}
-                            className={activeId === group.id ? "selected" : ""}
-                            onClick={() => handleSelectActive(group.id)}
-                        >
-                            {group.name}
-                        </button>
+                        <div key={group.id}>
+                            <button
+                                className={
+                                    activeId === group.id ? "selected" : ""
+                                }
+                                onClick={() => handleSelectActive(group.id)}
+                            >
+                                {group.name}
+                            </button>
+                            <button
+                                className={`lib-nav-group-settings ${
+                                    activeId === group.id ? "selected" : ""
+                                }`}
+                                onClick={() => handleGroupSettings(group.id)}
+                            >
+                                <img src={settingImage} alt="settings" />
+                            </button>
+                        </div>
                     ))}
                 </div>
                 <div id="lib-container">
