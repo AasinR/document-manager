@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { LengthType } from "react-spinners/helpers/props";
-import { CommentType, LabelType } from "../utils/data";
+import { CommentType, LabelType, UserPermission } from "../utils/data";
 
 declare global {
     interface JwtData {
@@ -28,6 +28,7 @@ declare global {
     interface NavItem {
         name: string;
         path: string;
+        permission?: UserPermission[];
     }
 
     interface UseAuthType {

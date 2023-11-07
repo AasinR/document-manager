@@ -1,34 +1,42 @@
 #account-page {
-    padding: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 #account-page h1 {
-    margin-bottom: 2rem;
+    padding: 0.5rem;
+    font-size: 1.5em;
+    border-bottom: 1px solid #808080;
 }
 
 #account-page h2 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .account-settings-container {
-    padding: 1rem 0;
-    border-top: 1px solid #808080;
+    padding: 0.5rem;
+    border-bottom: 1px solid #808080;
+}
+.account-settings-container:last-child {
+    border: none;
 }
 
 .account-settings-container > form {
     max-width: 400px;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.account-settings-container > div {
-    padding: 0 1rem;
+.account-settings-container > div > * {
+    padding: 0 0.5rem;
 }
-
+.account-settings-container > div > h2 {
+    padding: 0;
+}
 .account-settings-container > div > ul {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2rem;
 }
 
 .account-page-data {
@@ -58,20 +66,16 @@
 
 .account-settings-button {
     min-width: 100px;
-    padding: 0.5rem 1rem;
-    color: #ffffff;
+    padding: 0.5rem;
+    color: #808080;
     background-color: #202020;
     border: 1px solid #808080;
-    border-radius: 10px;
-    overflow: hidden;
 }
-
 .account-settings-button:hover {
-    background: #008b8b60;
+    color: #dddddd;
 }
-
 .account-settings-button-red:hover {
-    background: #b6080880;
+    color: #ffffff;
 }
 
 #account-settings-delete-button-container {

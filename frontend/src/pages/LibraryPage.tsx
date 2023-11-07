@@ -25,7 +25,7 @@ function LibraryPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { auth } = useAuth();
-    const { groupList, fetchGroupList } = useFetchGroupList();
+    const { groupList, setGroupList, fetchGroupList } = useFetchGroupList();
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -50,6 +50,9 @@ function LibraryPage() {
     const [fileInput, setFileInput] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [groupEditing, setGroupEditing] = useState<boolean>(false);
+    const [groupEditValue, setGroupEditValue] = useState<string>("");
+    const [groupErrorMessage, setGroupErrorMessage] = useState<string>("");
 
     const fetchDocumentList = useCallback(async (selectedId: string) => {
         const urlParam = selectedId ? `?groupId=${selectedId}` : "";
@@ -265,6 +268,34 @@ function LibraryPage() {
         navigate(`/group/${groupId}`);
     };
 
+    const handleGroupEdit = (value: boolean) => {
+        setGroupEditing(value);
+        setGroupEditValue("");
+        setGroupErrorMessage("");
+    };
+
+    const handleGroupAdd = async () => {
+        if (groupList === null) return;
+        const groupName = groupEditValue.trim();
+        if (!groupName) {
+            setGroupErrorMessage("Group name cannot be empty!");
+            return;
+        }
+        const requestBody = {
+            groupName: groupName,
+        };
+        await axios
+            .post(`${process.env.REACT_APP_API_URL}/groups/add`, requestBody)
+            .then((response: AxiosResponse<Group>) => {
+                setGroupList([...groupList, response.data]);
+                handleGroupEdit(false);
+            })
+            .catch((error) => {
+                console.log(error.response.data);
+                setGroupErrorMessage("Failed to add group!");
+            });
+    };
+
     const getSelectedTitle = () => {
         if (!activeId) return "Personal Library";
         const group = groupList?.find((value) => value.id === activeId);
@@ -289,7 +320,7 @@ function LibraryPage() {
                     </button>
                     <h2>Group</h2>
                     {groupList?.map((group) => (
-                        <div key={group.id}>
+                        <div key={group.id} className="lib-nav-group">
                             <button
                                 className={
                                     activeId === group.id ? "selected" : ""
@@ -308,6 +339,41 @@ function LibraryPage() {
                             </button>
                         </div>
                     ))}
+                    <div id="lib-nav-group-add">
+                        {groupEditing ? (
+                            <>
+                                <input
+                                    placeholder="Group name"
+                                    value={groupEditValue}
+                                    onChange={(event) =>
+                                        setGroupEditValue(event.target.value)
+                                    }
+                                />
+                                <div id="lib-nav-group-add-buttons">
+                                    <button
+                                        onClick={() => handleGroupEdit(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <SpinnerButton
+                                        onClick={handleGroupAdd}
+                                        spinnerColor="#808080"
+                                        spinnerSize={12}
+                                        speedMultiplier={0.6}
+                                    >
+                                        Add
+                                    </SpinnerButton>
+                                </div>
+                                {groupErrorMessage && (
+                                    <p>Error: {groupErrorMessage}</p>
+                                )}
+                            </>
+                        ) : (
+                            <button onClick={() => handleGroupEdit(true)}>
+                                Add Group +
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <div id="lib-container">
                     <div id="lib-header">

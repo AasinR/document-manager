@@ -1,9 +1,16 @@
-#setting-sidebar-layout {
+#sidebar-page {
+    display: flex;
+    justify-content: center;
+}
+
+#sidebar-layout {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: row;
 }
 
-#settings-sidebar {
+#sidebar {
     width: 200px;
     height: 100%;
     display: flex;
@@ -13,21 +20,22 @@
     border-right: 1px solid #808080;
 }
 
-.setting-sidebar-item {
+.sidebar-item {
     padding: 0.5rem;
+    font-size: 0.9em;
     text-decoration: none;
     color: #ffffff;
     border-bottom: 1px solid #808080;
 }
 
-.setting-sidebar-item:hover {
+.sidebar-item:hover {
     background-color: #303030;
 }
 
-.setting-sidebar-item.active {
+.sidebar-item.active {
     background-color: #303030;
 }
 
-#settings-outlet {
+#sidebar-outlet {
     flex: 1;
 }

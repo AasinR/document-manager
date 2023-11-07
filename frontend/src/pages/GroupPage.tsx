@@ -174,6 +174,29 @@ function GroupPage() {
             });
     };
 
+    const handleDeleteGroup = async () => {
+        await axios
+            .delete(`${process.env.REACT_APP_API_URL}/groups/delete/${id}`)
+            .then(() => {
+                navigate("/library");
+            })
+            .catch((error) => {
+                const apiError: ApiError | undefined = error.response?.data;
+                let message: string;
+                if (apiError === undefined || apiError.statusCode >= 500) {
+                    message =
+                        "Oops! Something went wrong on the server. Please try again later.";
+                } else if (apiError.statusCode === 401) {
+                    message = apiError.message;
+                } else if (apiError.statusCode === 404) {
+                    message = "User is not a member of this group!";
+                } else {
+                    message = "Failed to delete group!";
+                }
+                setErrorMessage(message);
+            });
+    };
+
     const handleAddMember = async (index: number) => {
         if (userList === null || shownUserList === null || group === null) {
             return;
@@ -418,6 +441,16 @@ function GroupPage() {
                         >
                             {editing ? "Save" : "Leave Group"}
                         </SpinnerButton>
+                        {authPermission === GroupPermission.OWNER && (
+                            <SpinnerButton
+                                onClick={handleDeleteGroup}
+                                spinnerColor="#808080"
+                                spinnerSize={14}
+                                speedMultiplier={0.6}
+                            >
+                                Delete
+                            </SpinnerButton>
+                        )}
                     </div>
                 </div>
                 <div id="group-container">
