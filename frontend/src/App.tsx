@@ -4,22 +4,28 @@ import {
     AuthenticationFilter,
     Navbar,
     PermissionFilter,
-    SettingsSidebar,
+    Sidebar,
 } from "./components";
 import {
-    ErrorPage,
-    HomePage,
-    LoginPage,
     AccountPage,
-    SearchPage,
     DocumentPage,
-    MetadataPage,
     DocumentViewPage,
+    ErrorPage,
+    GroupPage,
+    HomePage,
     LabelPage,
     LibraryPage,
-    GroupPage,
+    LoginPage,
+    MetadataPage,
+    SearchPage,
+    UserManagerPage,
 } from "./pages";
+import { UserPermission } from "./utils/data";
 import "./App.css";
+
+const settingsNavList: NavItem[] = [{ name: "Account", path: "account" }];
+
+const adminNavList: NavItem[] = [{ name: "User Manager", path: "users" }];
 
 function App() {
     return (
@@ -57,11 +63,42 @@ function App() {
                             </Route>
                             <Route
                                 path="settings"
-                                element={<SettingsSidebar />}
+                                element={
+                                    <Sidebar
+                                        path="settings"
+                                        defaultPath="account"
+                                        navItemList={settingsNavList}
+                                    />
+                                }
                             >
                                 <Route
                                     path="account"
                                     element={<AccountPage />}
+                                />
+                            </Route>
+                        </Route>
+
+                        {/* permission: admin */}
+                        <Route
+                            element={
+                                <PermissionFilter
+                                    allowed={[UserPermission.ADMIN]}
+                                />
+                            }
+                        >
+                            <Route
+                                path="admin"
+                                element={
+                                    <Sidebar
+                                        path="admin"
+                                        defaultPath="users"
+                                        navItemList={adminNavList}
+                                    />
+                                }
+                            >
+                                <Route
+                                    path="users"
+                                    element={<UserManagerPage />}
                                 />
                             </Route>
                         </Route>
