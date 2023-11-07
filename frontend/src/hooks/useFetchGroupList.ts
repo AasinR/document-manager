@@ -24,7 +24,7 @@ function useFetchGroupList() {
         [groupList]
     );
 
-    return { groupList, fetchGroupList };
+    return { groupList, setGroupList, fetchGroupList };
 }
 
 export default useFetchGroupList;

@@ -14,6 +14,7 @@
 
 #lib-nav {
     min-width: 200px;
+    max-width: 200px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -47,12 +48,12 @@
     border-bottom: 1px solid #808080;
 }
 
-#lib-nav > div {
+.lib-nav-group {
     display: flex;
     flex-direction: row;
 }
 
-#lib-nav > div > button:first-child {
+.lib-nav-group > button:first-child {
     flex-grow: 1;
 }
 
@@ -92,6 +93,54 @@
 }
 .lib-nav-group-settings:hover > img {
     filter: invert(80%);
+}
+
+#lib-nav-group-add {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#lib-nav-group-add button {
+    height: 30px;
+    width: 100%;
+    padding: 0.2rem;
+    text-align: center;
+    color: #808080;
+    background-color: #202020;
+    border: 1px solid #808080;
+}
+#lib-nav-group-add button:hover {
+    color: #dddddd;
+    background-color: #202020;
+}
+#lib-nav-group-add button:active {
+    color: #ffffff;
+    background-color: #202020;
+}
+
+#lib-nav-group-add > input {
+    height: 30px;
+    padding: 0.5rem;
+    color: #ffffff;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #808080;
+}
+
+#lib-nav-group-add-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+#lib-nav-group-add > p {
+    text-align: center;
+    font-size: 0.9em;
+    color: #b60808;
 }
 
 #lib-container {
