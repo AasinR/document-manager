@@ -17,4 +17,6 @@ public interface GroupRepository extends MongoRepository<Group, String> {
     boolean existsByIdAndGroupMemberListUsername(String id, String username);
 
     boolean existsByGroupMemberListContaining(GroupMember member);
+
+    boolean existsByName(String name);
 }

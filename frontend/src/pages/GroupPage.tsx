@@ -147,7 +147,9 @@ function GroupPage() {
             })
             .catch((error) => {
                 console.log(error.response.data);
-                setErrorMessage("Failed to update group name!");
+                setErrorMessage(
+                    "Failed to update group name. Given name is already taken!"
+                );
             });
     };
 

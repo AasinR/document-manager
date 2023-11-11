@@ -292,7 +292,9 @@ function LibraryPage() {
             })
             .catch((error) => {
                 console.log(error.response.data);
-                setGroupErrorMessage("Failed to add group!");
+                setGroupErrorMessage(
+                    "Failed to add group. Given name is already taken!"
+                );
             });
     };
 

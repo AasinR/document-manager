@@ -42,6 +42,9 @@ public class GroupService {
     }
 
     public Optional<Group> add(String username, String groupName) {
+        if (groupRepository.existsByName(groupName)) {
+            return Optional.empty();
+        }
         Set<GroupMember> groupMemberList = Set.of(new GroupMember(username, GroupPermission.OWNER));
         Group group = new Group(groupName, groupMemberList);
         try {
@@ -53,6 +56,9 @@ public class GroupService {
     }
 
     public Optional<Group> update(Group group) {
+        if (groupRepository.existsByName(group.getName())) {
+            return Optional.empty();
+        }
         return Optional.of(groupRepository.save(group));
     }
 
